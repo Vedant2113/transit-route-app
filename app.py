@@ -4,7 +4,7 @@ import pandas as pd
 from datetime import datetime, timedelta
 
 # Load your Excel data
-file_path = r"C:\Users\patel\Downloads\IA_560_Project\merged_data.xlsx"
+file_path = "merged_data.xlsx"
 df = pd.read_excel(file_path)
 
 # Use 'Depart Time' directly (already in datetime.time format)
