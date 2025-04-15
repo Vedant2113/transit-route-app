@@ -1,7 +1,7 @@
 import streamlit as st
 import networkx as nx
 import pandas as pd
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
 
 # Load your Excel data
 file_path = "merged_data.xlsx"
@@ -71,7 +71,9 @@ def transit_app():
     end = st.selectbox("Select destination stop", all_stops, index=1)
     trip_type = st.radio("Trip type", options=["One-way", "Round-trip"])
 
-    user_time = st.time_input("Select earliest departure time", value=datetime.now().time())
+    # Use fixed time instead of datetime.now().time() to avoid timezone drift
+    default_time = time(6, 0)  # default 6:00 AM
+    user_time = st.time_input("Select earliest departure time", value=default_time)
 
     if st.button("Find Shortest Route"):
         if trip_type == "One-way":
