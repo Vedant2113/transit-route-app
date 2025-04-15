@@ -125,7 +125,25 @@ end = stop_display_map[end_display]
 
 trip_type = st.radio("Trip type", options=["One-way"])
 
-if st.button("Find Shortest Route"):
+show_all = st.checkbox("Show all possible routes without selecting time")
+
+if show_all:
+    routes_table = []
+    for s_time in sorted([t for s, t in G.nodes if s == start]):
+        result = find_transfer_path(start, end, s_time)
+        if isinstance(result, tuple):
+            path, duration = result
+            routes_table.append({
+                'Start Time': s_time.strftime("%I:%M %p"),
+                'Duration (min)': duration,
+                'Transfers': sum(1 for i in range(1, len(path)) if path[i]['route'] != path[i-1]['route'])
+            })
+    if routes_table:
+        st.dataframe(pd.DataFrame(routes_table))
+    else:
+        st.warning("No available routes found from this stop to the destination.")
+
+elif st.button("Find Shortest Route"):
     result = find_transfer_path(start, end, user_time)
     if isinstance(result, str):
         st.error(result)
