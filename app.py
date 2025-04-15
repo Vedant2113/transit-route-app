@@ -37,18 +37,24 @@ for route in valid_df['Route'].unique():
         minutes = int(duration.total_seconds() / 60)
         G.add_edge(stop_a, stop_b, weight=minutes, route=route, depart=time_a, arrive=time_b)
 
-# Function to find shortest path
-def find_shortest_path(start, end, round_trip=False):
+# Function to find shortest path after a given start time
+def find_shortest_path(start, end, start_time=None, round_trip=False):
     try:
-        path = nx.dijkstra_path(G, start, end, weight='weight')
-        total_time = sum(G[path[i]][path[i + 1]]['weight'] for i in range(len(path) - 1))
-        result = [(path[i], G[path[i]][path[i+1]]['route'], G[path[i]][path[i+1]]['depart'].strftime("%I:%M %p")) for i in range(len(path)-1)]
+        # Filter out edges departing before selected time (if time is specified)
+        subgraph = G.copy()
+        if start_time:
+            edges_to_remove = [(u, v) for u, v, d in subgraph.edges(data=True) if d['depart'] < start_time]
+            subgraph.remove_edges_from(edges_to_remove)
+
+        path = nx.dijkstra_path(subgraph, start, end, weight='weight')
+        total_time = sum(subgraph[path[i]][path[i + 1]]['weight'] for i in range(len(path) - 1))
+        result = [(path[i], subgraph[path[i]][path[i+1]]['route'], subgraph[path[i]][path[i+1]]['depart'].strftime("%I:%M %p")) for i in range(len(path)-1)]
         result.append((path[-1], '-', '-'))
 
         if round_trip:
-            return_path = nx.dijkstra_path(G, end, start, weight='weight')
-            return_time = sum(G[return_path[i]][return_path[i + 1]]['weight'] for i in range(len(return_path) - 1))
-            return_result = [(return_path[i], G[return_path[i]][return_path[i+1]]['route'], G[return_path[i]][return_path[i+1]]['depart'].strftime("%I:%M %p")) for i in range(len(return_path)-1)]
+            return_path = nx.dijkstra_path(subgraph, end, start, weight='weight')
+            return_time = sum(subgraph[return_path[i]][return_path[i + 1]]['weight'] for i in range(len(return_path) - 1))
+            return_result = [(return_path[i], subgraph[return_path[i]][return_path[i+1]]['route'], subgraph[return_path[i]][return_path[i+1]]['depart'].strftime("%I:%M %p")) for i in range(len(return_path)-1)]
             return_result.append((return_path[-1], '-', '-'))
             return result, total_time, return_result, return_time
         else:
@@ -65,9 +71,11 @@ def transit_app():
     end = st.selectbox("Select destination stop", all_stops, index=1)
     trip_type = st.radio("Trip type", options=["One-way", "Round-trip"])
 
+    user_time = st.time_input("Select earliest departure time", value=datetime.now().time())
+
     if st.button("Find Shortest Route"):
         if trip_type == "One-way":
-            result = find_shortest_path(start, end, round_trip=False)
+            result = find_shortest_path(start, end, start_time=user_time, round_trip=False)
             if isinstance(result, str):
                 st.error(result)
             else:
@@ -77,7 +85,7 @@ def transit_app():
                 for stop, route_num, depart in route:
                     st.write(f"➡️ {stop} via Route {route_num} at {depart}")
         else:
-            result = find_shortest_path(start, end, round_trip=True)
+            result = find_shortest_path(start, end, start_time=user_time, round_trip=True)
             if isinstance(result, str):
                 st.error(result)
             else:
