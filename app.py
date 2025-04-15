@@ -2,6 +2,7 @@ import streamlit as st
 import networkx as nx
 import pandas as pd
 from datetime import datetime, timedelta, time
+import calendar
 
 # Load your Excel data
 file_path = "merged_data.xlsx"
@@ -9,6 +10,12 @@ df = pd.read_excel(file_path)
 
 # Use 'Depart Time' directly (already in datetime.time format)
 df['Time'] = df['Depart Time']
+
+# Get current weekday name (e.g., 'Monday')
+today_name = calendar.day_name[datetime.today().weekday()]
+
+# Filter data by today's day of week
+df = df[df[today_name] == 1]
 
 # Initialize directed graph
 G = nx.DiGraph()
@@ -38,12 +45,14 @@ for route in valid_df['Route'].unique():
         G.add_edge(stop_a, stop_b, weight=minutes, route=route, depart=time_a, arrive=time_b)
 
 # Function to find shortest path after a given start time
+
 def find_shortest_path(start, end, start_time=None, round_trip=False):
     try:
-        # Filter out edges departing before selected time (if time is specified)
+        # Filter out edges departing more than 20 mins before selected time (if time is specified)
         subgraph = G.copy()
         if start_time:
-            edges_to_remove = [(u, v) for u, v, d in subgraph.edges(data=True) if d['depart'] < start_time]
+            threshold_time = (datetime.combine(datetime.today(), start_time) - timedelta(minutes=20)).time()
+            edges_to_remove = [(u, v) for u, v, d in subgraph.edges(data=True) if d['depart'] < threshold_time]
             subgraph.remove_edges_from(edges_to_remove)
 
         path = nx.dijkstra_path(subgraph, start, end, weight='weight')
@@ -71,7 +80,6 @@ def transit_app():
     end = st.selectbox("Select destination stop", all_stops, index=1)
     trip_type = st.radio("Trip type", options=["One-way", "Round-trip"])
 
-    # Use fixed time instead of datetime.now().time() to avoid timezone drift
     default_time = time(6, 0)  # default 6:00 AM
     user_time = st.time_input("Select earliest departure time", value=default_time)
 
