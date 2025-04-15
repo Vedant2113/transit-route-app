@@ -40,7 +40,8 @@ for route in df['Route'].unique():
     if route == '68':
         hospital_times = df[(df['Route'] == '68') & (df['Stop Location'] == 'Canton-Potsdam Hospital')]['Time']
         if hospital_times.empty:
-            route_df = route_df[route_df['Stop Location'] != 'Canton-Potsdam Hospital']sort_values(by='Time')
+            route_df = route_df[route_df['Stop Location'] != 'Canton-Potsdam Hospital']
+        route_df = route_df.sort_values(by='Time')
     grouped = route_df.groupby('Route')
     for _, group in grouped:
         for i in range(len(group) - 1):
