@@ -30,52 +30,78 @@ time_options = sorted(df['Time'].dropna().unique())
 default_time = min(time_options) if time_options else time(6, 0)
 user_time = st.selectbox("Select earliest available departure time", time_options, index=time_options.index(default_time) if default_time in time_options else 0)
 
-# Initialize directed graph
+# Build a time-expanded graph (stop, time) nodes
 G = nx.DiGraph()
-valid_df = df[df['Time'].notnull()].sort_values(by=['Route', 'Time'])
+df = df[df['Time'].notnull()].sort_values(by=['Stop Location', 'Time'])
 
-for route in valid_df['Route'].unique():
-    route_df = valid_df[valid_df['Route'] == route]
-    stops = list(route_df[['Stop Location', 'Time', 'Town']].itertuples(index=False, name=None))
+# Add edges for travel along the same route
+for route in df['Route'].unique():
+    route_df = df[df['Route'] == route].sort_values(by='Time')
+    grouped = route_df.groupby('Route')
+    for _, group in grouped:
+        for i in range(len(group) - 1):
+            row_a = group.iloc[i]
+            row_b = group.iloc[i + 1]
+            time_a = row_a['Time']
+            time_b = row_b['Time']
+            duration = (datetime.combine(datetime.today(), time_b) - datetime.combine(datetime.today(), time_a)).seconds / 60.0
+            if duration >= 0:
+                G.add_edge(
+                    (row_a['Stop Location'], time_a),
+                    (row_b['Stop Location'], time_b),
+                    weight=duration,
+                    route=route,
+                    town=row_a['Town']
+                )
 
-    for i in range(len(stops) - 1):
-        stop_a, time_a, town_a = stops[i]
-        stop_b, time_b, town_b = stops[i + 1]
+# Add transfer edges at the same stop (wait time for next bus)
+for stop, group in df.groupby('Stop Location'):
+    times = sorted(group['Time'].unique())
+    for i in range(len(times) - 1):
+        t1 = times[i]
+        t2 = times[i + 1]
+        wait = (datetime.combine(datetime.today(), t2) - datetime.combine(datetime.today(), t1)).seconds / 60.0
+        if wait > 0:
+            G.add_edge(
+                (stop, t1),
+                (stop, t2),
+                weight=wait,
+                route='Transfer',
+                town=group.iloc[0]['Town']
+            )
 
-        if not time_a or not time_b:
-            continue
+# Find shortest path with transfers allowed
+def find_transfer_path(start, end, start_time):
+    candidates = [(s, t) for s, t in G.nodes if s == start and t >= start_time]
+    targets = [(s, t) for s, t in G.nodes if s == end]
 
-        if time_b > time_a:
-            duration = datetime.combine(datetime.today(), time_b) - datetime.combine(datetime.today(), time_a)
-        else:
-            duration = (datetime.combine(datetime.today(), time_b) + timedelta(days=1)) - datetime.combine(datetime.today(), time_a)
+    shortest_path = None
+    shortest_cost = float('inf')
+    best_result = []
 
-        minutes = int(duration.total_seconds() / 60)
-        G.add_edge(stop_a, stop_b, weight=minutes, route=route, depart=time_a, arrive=time_b, town=town_a)
+    for start_node in candidates:
+        for end_node in targets:
+            try:
+                path = nx.dijkstra_path(G, start_node, end_node, weight='weight')
+                cost = sum(G[path[i]][path[i + 1]]['weight'] for i in range(len(path) - 1))
+                if cost < shortest_cost:
+                    shortest_cost = cost
+                    shortest_path = path
+            except nx.NetworkXNoPath:
+                continue
 
-# Function to find shortest path after a given start time
-def find_shortest_path(start, end, start_time=None, round_trip=False):
-    try:
-        subgraph = G.copy()
-        if start_time:
-            edges_to_remove = [(u, v) for u, v, d in subgraph.edges(data=True) if d['depart'] < start_time]
-            subgraph.remove_edges_from(edges_to_remove)
+    if not shortest_path:
+        return "No path found"
 
-        path = nx.dijkstra_path(subgraph, start, end, weight='weight')
-        total_time = sum(subgraph[path[i]][path[i + 1]]['weight'] for i in range(len(path) - 1))
-        result = [(path[i], subgraph[path[i]][path[i+1]]['town'], subgraph[path[i]][path[i+1]]['route'], subgraph[path[i]][path[i+1]]['depart'].strftime("%I:%M %p")) for i in range(len(path)-1)]
-        result.append((path[-1], '-', '-', '-'))
-
-        if round_trip:
-            return_path = nx.dijkstra_path(subgraph, end, start, weight='weight')
-            return_time = sum(subgraph[return_path[i]][return_path[i + 1]]['weight'] for i in range(len(return_path) - 1))
-            return_result = [(return_path[i], subgraph[return_path[i]][return_path[i+1]]['town'], subgraph[return_path[i]][return_path[i+1]]['route'], subgraph[return_path[i]][return_path[i+1]]['depart'].strftime("%I:%M %p")) for i in range(len(return_path)-1)]
-            return_result.append((return_path[-1], '-', '-', '-'))
-            return result, total_time, return_result, return_time
-        else:
-            return result, total_time
-    except nx.NetworkXNoPath:
-        return f"No path found between {start} and {end}"
+    result = []
+    for i in range(len(shortest_path) - 1):
+        stop, t = shortest_path[i]
+        next_stop, _ = shortest_path[i + 1]
+        edge = G[shortest_path[i]][shortest_path[i + 1]]
+        result.append((stop, edge['town'], edge['route'], t.strftime("%I:%M %p")))
+    stop, t = shortest_path[-1]
+    result.append((stop, '-', '-', '-'))
+    return result, int(shortest_cost)
 
 # Select start and end
 all_displays = sorted(df['StopDisplay'].dropna().unique())
@@ -84,29 +110,15 @@ end_display = st.selectbox("Select destination stop", all_displays, index=1)
 start = stop_display_map[start_display]
 end = stop_display_map[end_display]
 
-trip_type = st.radio("Trip type", options=["One-way", "Round-trip"])
+trip_type = st.radio("Trip type", options=["One-way"])
 
 if st.button("Find Shortest Route"):
-    if trip_type == "One-way":
-        result = find_shortest_path(start, end, start_time=user_time, round_trip=False)
-        if isinstance(result, str):
-            st.error(result)
-        else:
-            route, duration = result
-            st.success(f"Shortest one-way trip takes {duration} minutes")
-            st.write("### Route Details:")
-            for stop, town, route_num, depart in route:
-                st.write(f"➡️ {stop} ({town}) via Route {route_num} at {depart}")
+    result = find_transfer_path(start, end, user_time)
+    if isinstance(result, str):
+        st.error(result)
     else:
-        result = find_shortest_path(start, end, start_time=user_time, round_trip=True)
-        if isinstance(result, str):
-            st.error(result)
-        else:
-            out_route, out_time, return_route, return_time = result
-            st.success(f"Round-trip: {out_time} mins out, {return_time} mins back")
-            st.write("### Outbound Route:")
-            for stop, town, route_num, depart in out_route:
-                st.write(f"➡️ {stop} ({town}) via Route {route_num} at {depart}")
-            st.write("### Return Route:")
-            for stop, town, route_num, depart in return_route:
-                st.write(f"⬅️ {stop} ({town}) via Route {route_num} at {depart}")
+        route, duration = result
+        st.success(f"Trip time: {duration} minutes")
+        st.write("### Route Details:")
+        for stop, town, route_num, depart in route:
+            st.write(f"➡️ {stop} ({town}) via Route {route_num} at {depart}")
