@@ -77,7 +77,6 @@ def find_transfer_path(start, end, start_time):
 
     shortest_path = None
     shortest_cost = float('inf')
-    best_result = []
 
     for start_node in candidates:
         for end_node in targets:
@@ -96,11 +95,25 @@ def find_transfer_path(start, end, start_time):
     result = []
     for i in range(len(shortest_path) - 1):
         stop, t = shortest_path[i]
-        next_stop, _ = shortest_path[i + 1]
+        next_stop, t2 = shortest_path[i + 1]
         edge = G[shortest_path[i]][shortest_path[i + 1]]
-        result.append((stop, edge['town'], edge['route'], t.strftime("%I:%M %p")))
-    stop, t = shortest_path[-1]
-    result.append((stop, '-', '-', '-'))
+        result.append({
+            'stop': stop,
+            'town': edge['town'],
+            'route': edge['route'],
+            'time': t.strftime("%I:%M %p"),
+        })
+
+    # Add final stop with actual route, time, and town
+    final_stop, final_time = shortest_path[-1]
+    final_town = df[df['Stop Location'] == final_stop]['Town'].iloc[0] if not df[df['Stop Location'] == final_stop].empty else '-'
+    result.append({
+        'stop': final_stop,
+        'town': final_town,
+        'route': result[-1]['route'] if result else '-',
+        'time': final_time.strftime("%I:%M %p")
+    })
+
     return result, int(shortest_cost)
 
 # Select start and end
@@ -120,5 +133,8 @@ if st.button("Find Shortest Route"):
         route, duration = result
         st.success(f"Trip time: {duration} minutes")
         st.write("### Route Details:")
-        for stop, town, route_num, depart in route:
-            st.write(f"➡️ {stop} ({town}) via Route {route_num} at {depart}")
+        previous_route = None
+        for step in route:
+            transfer_notice = " (Transfer)" if previous_route and step['route'] != previous_route else ""
+            st.write(f"➡️ {step['stop']} ({step['town']}) via Route {step['route']}{transfer_notice} at {step['time']}")
+            previous_route = step['route']
