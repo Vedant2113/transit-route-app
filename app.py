@@ -21,13 +21,19 @@ selected_day = st.selectbox("Select operating day", days_of_week, index=datetime
 # Filter data by selected day
 df = df[df[selected_day] == 1]
 
+# Add town to stop name for display
+df['StopDisplay'] = df['Stop Location'] + " (" + df['Town'] + ")"
+stop_display_map = dict(zip(df['StopDisplay'], df['Stop Location']))
+
+# Limit time options to available departure times only
+time_options = sorted(df['Time'].dropna().unique())
+default_time = min(time_options) if time_options else time(6, 0)
+user_time = st.selectbox("Select earliest available departure time", time_options, index=time_options.index(default_time) if default_time in time_options else 0)
+
 # Initialize directed graph
 G = nx.DiGraph()
-
-# Filter and sort valid data
 valid_df = df[df['Time'].notnull()].sort_values(by=['Route', 'Time'])
 
-# Build the graph: edges represent trips between sequential stops
 for route in valid_df['Route'].unique():
     route_df = valid_df[valid_df['Route'] == route]
     stops = list(route_df[['Stop Location', 'Time', 'Town']].itertuples(index=False, name=None))
@@ -39,7 +45,6 @@ for route in valid_df['Route'].unique():
         if not time_a or not time_b:
             continue
 
-        # Calculate travel time in minutes
         if time_b > time_a:
             duration = datetime.combine(datetime.today(), time_b) - datetime.combine(datetime.today(), time_a)
         else:
@@ -53,8 +58,7 @@ def find_shortest_path(start, end, start_time=None, round_trip=False):
     try:
         subgraph = G.copy()
         if start_time:
-            threshold_time = (datetime.combine(datetime.today(), start_time) - timedelta(minutes=20)).time()
-            edges_to_remove = [(u, v) for u, v, d in subgraph.edges(data=True) if d['depart'] < threshold_time]
+            edges_to_remove = [(u, v) for u, v, d in subgraph.edges(data=True) if d['depart'] < start_time]
             subgraph.remove_edges_from(edges_to_remove)
 
         path = nx.dijkstra_path(subgraph, start, end, weight='weight')
@@ -73,10 +77,6 @@ def find_shortest_path(start, end, start_time=None, round_trip=False):
     except nx.NetworkXNoPath:
         return f"No path found between {start} and {end}"
 
-# Add town to stop name for display
-df['StopDisplay'] = df['Stop Location'] + " (" + df['Town'] + ")"
-stop_display_map = dict(zip(df['StopDisplay'], df['Stop Location']))
-
 # Select start and end
 all_displays = sorted(df['StopDisplay'].dropna().unique())
 start_display = st.selectbox("Select starting stop", all_displays, index=0)
@@ -85,8 +85,6 @@ start = stop_display_map[start_display]
 end = stop_display_map[end_display]
 
 trip_type = st.radio("Trip type", options=["One-way", "Round-trip"])
-default_time = time(6, 0)
-user_time = st.time_input("Select earliest departure time", value=default_time)
 
 if st.button("Find Shortest Route"):
     if trip_type == "One-way":
