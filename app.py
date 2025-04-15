@@ -36,7 +36,11 @@ df = df[df['Time'].notnull()].sort_values(by=['Stop Location', 'Time'])
 
 # Add edges for travel along the same route
 for route in df['Route'].unique():
-    route_df = df[df['Route'] == route].sort_values(by='Time')
+    route_df = df[(df['Route'] == route)].copy()
+    if route == '68':
+        hospital_times = df[(df['Route'] == '68') & (df['Stop Location'] == 'Canton-Potsdam Hospital')]['Time']
+        if hospital_times.empty:
+            route_df = route_df[route_df['Stop Location'] != 'Canton-Potsdam Hospital']sort_values(by='Time')
     grouped = route_df.groupby('Route')
     for _, group in grouped:
         for i in range(len(group) - 1):
