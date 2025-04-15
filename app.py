@@ -11,11 +11,15 @@ df = pd.read_excel(file_path)
 # Use 'Depart Time' directly (already in datetime.time format)
 df['Time'] = df['Depart Time']
 
-# Get current weekday name (e.g., 'Monday')
-today_name = calendar.day_name[datetime.today().weekday()]
+# Streamlit UI
+st.title("🚌 Bus Route Time Optimizer")
 
-# Filter data by today's day of week
-df = df[df[today_name] == 1]
+# Select operating day
+days_of_week = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+selected_day = st.selectbox("Select operating day", days_of_week, index=datetime.today().weekday())
+
+# Filter data by selected day
+df = df[df[selected_day] == 1]
 
 # Initialize directed graph
 G = nx.DiGraph()
@@ -45,10 +49,8 @@ for route in valid_df['Route'].unique():
         G.add_edge(stop_a, stop_b, weight=minutes, route=route, depart=time_a, arrive=time_b, town=town_a)
 
 # Function to find shortest path after a given start time
-
 def find_shortest_path(start, end, start_time=None, round_trip=False):
     try:
-        # Filter out edges departing more than 20 mins before selected time (if time is specified)
         subgraph = G.copy()
         if start_time:
             threshold_time = (datetime.combine(datetime.today(), start_time) - timedelta(minutes=20)).time()
@@ -71,42 +73,42 @@ def find_shortest_path(start, end, start_time=None, round_trip=False):
     except nx.NetworkXNoPath:
         return f"No path found between {start} and {end}"
 
-# Streamlit UI
-def transit_app():
-    st.title("🚌 Bus Route Time Optimizer")
+# Add town to stop name for display
+df['StopDisplay'] = df['Stop Location'] + " (" + df['Town'] + ")"
+stop_display_map = dict(zip(df['StopDisplay'], df['Stop Location']))
 
-    all_stops = sorted(df['Stop Location'].dropna().unique())
-    start = st.selectbox("Select starting stop", all_stops, index=0)
-    end = st.selectbox("Select destination stop", all_stops, index=1)
-    trip_type = st.radio("Trip type", options=["One-way", "Round-trip"])
+# Select start and end
+all_displays = sorted(df['StopDisplay'].dropna().unique())
+start_display = st.selectbox("Select starting stop", all_displays, index=0)
+end_display = st.selectbox("Select destination stop", all_displays, index=1)
+start = stop_display_map[start_display]
+end = stop_display_map[end_display]
 
-    default_time = time(6, 0)  # default 6:00 AM
-    user_time = st.time_input("Select earliest departure time", value=default_time)
+trip_type = st.radio("Trip type", options=["One-way", "Round-trip"])
+default_time = time(6, 0)
+user_time = st.time_input("Select earliest departure time", value=default_time)
 
-    if st.button("Find Shortest Route"):
-        if trip_type == "One-way":
-            result = find_shortest_path(start, end, start_time=user_time, round_trip=False)
-            if isinstance(result, str):
-                st.error(result)
-            else:
-                route, duration = result
-                st.success(f"Shortest one-way trip takes {duration} minutes")
-                st.write("### Route Details:")
-                for stop, town, route_num, depart in route:
-                    st.write(f"➡️ {stop} ({town}) via Route {route_num} at {depart}")
+if st.button("Find Shortest Route"):
+    if trip_type == "One-way":
+        result = find_shortest_path(start, end, start_time=user_time, round_trip=False)
+        if isinstance(result, str):
+            st.error(result)
         else:
-            result = find_shortest_path(start, end, start_time=user_time, round_trip=True)
-            if isinstance(result, str):
-                st.error(result)
-            else:
-                out_route, out_time, return_route, return_time = result
-                st.success(f"Round-trip: {out_time} mins out, {return_time} mins back")
-                st.write("### Outbound Route:")
-                for stop, town, route_num, depart in out_route:
-                    st.write(f"➡️ {stop} ({town}) via Route {route_num} at {depart}")
-                st.write("### Return Route:")
-                for stop, town, route_num, depart in return_route:
-                    st.write(f"⬅️ {stop} ({town}) via Route {route_num} at {depart}")
-
-# Run the app
-transit_app()
+            route, duration = result
+            st.success(f"Shortest one-way trip takes {duration} minutes")
+            st.write("### Route Details:")
+            for stop, town, route_num, depart in route:
+                st.write(f"➡️ {stop} ({town}) via Route {route_num} at {depart}")
+    else:
+        result = find_shortest_path(start, end, start_time=user_time, round_trip=True)
+        if isinstance(result, str):
+            st.error(result)
+        else:
+            out_route, out_time, return_route, return_time = result
+            st.success(f"Round-trip: {out_time} mins out, {return_time} mins back")
+            st.write("### Outbound Route:")
+            for stop, town, route_num, depart in out_route:
+                st.write(f"➡️ {stop} ({town}) via Route {route_num} at {depart}")
+            st.write("### Return Route:")
+            for stop, town, route_num, depart in return_route:
+                st.write(f"⬅️ {stop} ({town}) via Route {route_num} at {depart}")
