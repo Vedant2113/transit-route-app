@@ -22,13 +22,13 @@ selected_day = st.selectbox("Select operating day", days_of_week, index=datetime
 df = df[df[selected_day] == 1]
 
 # Add town to stop name for display
-df['StopDisplay'] = df['Stop Location'] + " (" + df['Town'] + ")"
+df['StopDisplay'] = df['Stop Location'].str.replace(r'\s*\(Loop\)', '', regex=True) + " (" + df['Town'] + ")"
 stop_display_map = dict(zip(df['StopDisplay'], df['Stop Location']))
 
 # Limit time options to available departure times only
 time_options = sorted(df['Time'].dropna().unique())
 default_time = min(time_options) if time_options else time(6, 0)
-user_time = st.time_input("Select earliest available departure time", value=default_time) if default_time in time_options else 0)
+user_time = st.time_input("Select earliest available departure time", value=default_time)
 
 # Build a time-expanded graph (stop, time) nodes
 G = nx.DiGraph()
