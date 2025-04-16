@@ -70,14 +70,14 @@ st.markdown("""
             background: #eeeeee;
             color: #000000;
             border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 18px;
-            width: 40px;
-            height: 40px;
+            border-radius: 6px;
+            font-size: 20px;
+            width: 60px;
+            height: 44px;
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 1px 3px rgba(255,255,255,0.1);
+            box-shadow: 0 1px 4px rgba(255,255,255,0.2);
         }
         .transfer-step {
             color: #2a9d8f;
