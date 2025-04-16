@@ -80,6 +80,13 @@ st.markdown("""
 if 'title_rendered' not in st.session_state:
     st.title("🚌 Bus Route Time Optimizer")
     st.session_state['title_rendered'] = True
+
+st.title("🚌 Bus Route Time Optimizer")
+
+# Clear previous titles if duplicated
+if 'title_rendered' not in st.session_state:
+    st.title("🚌 Bus Route Time Optimizer")
+    st.session_state['title_rendered'] = True
 # Select operating day
 days_of_week = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 selected_day = st.selectbox("Select operating day", days_of_week, index=datetime.today().weekday())
