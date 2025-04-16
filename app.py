@@ -81,6 +81,9 @@ st.markdown("""
             color: #2a9d8f;
             font-weight: bold;
         }
+        .swap-button-container, .swap-button, .swap-button::before {
+            display: none !important;
+        }
     </style>
 """, unsafe_allow_html=True)
 
