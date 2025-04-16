@@ -57,26 +57,6 @@ st.markdown("""
         .stButton button:hover {
             background-color: #dab700;
         }
-        .route-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .route-selectbox {
-            flex-grow: 1;
-        }
-        .swap-button {
-            background: #f6c700;
-            color: black;
-            font-weight: bold;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            padding: 0.5rem 1rem;
-            cursor: pointer;
-            margin: 0 auto 1rem auto;
-            display: block;
-        }
         .highlight-transfer {
             background-color: #fceabb;
             padding: 0.5rem;
@@ -88,10 +68,9 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Clear previous titles if duplicated
-if 'title_rendered' not in st.session_state:
+
     st.title("🚌 Bus Route Time Optimizer")
-    st.session_state['title_rendered'] = True
+    
 
 # Select operating day
 days_of_week = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
