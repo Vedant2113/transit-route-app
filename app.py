@@ -14,28 +14,36 @@ df['Time'] = pd.to_datetime(df['DepartTime'], errors='coerce').dt.time
 st.set_page_config(layout="wide")
 st.markdown("""
     <style>
-        .main > div {
-            display: flex;
-            justify-content: center;
-        }
-        .block-container {
-            max-width: 800px;
-            padding-left: 2rem;
-            padding-right: 2rem;
-        }
-        .route-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .route-selectbox {
-            flex-grow: 1;
-        }
-        .route-switch {
-            padding: 0 10px;
-            font-size: 20px;
-        }
-    </style>
+    .main > div {
+        display: flex;
+        justify-content: center;
+    }
+    .block-container {
+        max-width: 720px;
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    .route-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .route-selectbox {
+        flex-grow: 1;
+    }
+    .route-switch {
+        padding: 0 10px;
+        font-size: 20px;
+        margin-top: 32px;
+    }
+    .stSelectbox > div, .stRadio > div, .stTimeInput > div {
+        margin-bottom: 10px;
+    }
+    .stButton button {
+        border-radius: 6px;
+        padding: 0.4rem 1rem;
+    }
+</style>
 """, unsafe_allow_html=True)
 
 st.title("🚌 Bus Route Time Optimizer")
