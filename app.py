@@ -49,6 +49,19 @@ st.markdown("""
         color: #2ecc71;
         font-weight: bold;
     }
+    .swap-button {
+        background: #333;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 18px;
+        padding: 8px 12px;
+        cursor: pointer;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+    .swap-button:hover {
+        background: #555;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -85,11 +98,14 @@ if 'end_display' not in st.session_state:
 
 # Swap trigger button
 swap = False
-col1, col2, col3 = st.columns([4.5, 1, 4.5])
+col1, col2, col3 = st.columns([4.2, 0.6, 4.2])
 with col2:
-    st.markdown("<div style='margin-top: 2.2rem; text-align: center;'>", unsafe_allow_html=True)
-    swap = st.button("🔄", help="Switch start and destination")
-    st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown("""
+        <div style='display: flex; justify-content: center; align-items: center; height: 100%; margin-top: 2.5rem;'>
+            <button class='swap-button' onclick='document.querySelector("button[kind=\"secondary\"]").click();'>🔄</button>
+        </div>
+    """, unsafe_allow_html=True)
+    swap = st.button("", key="swap_button", help="Switch start and destination")
 
 # Handle swap before dropdowns
 if swap:
