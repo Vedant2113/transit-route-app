@@ -22,7 +22,7 @@ st.markdown("""
     .block-container {
         max-width: 520px;
         padding: 2rem;
-        background-color: #ffffff;
+        background-color: #1e1e1e; color: white;
         border-radius: 16px;
         box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
     }
