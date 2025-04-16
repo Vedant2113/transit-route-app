@@ -11,6 +11,7 @@ df = pd.read_excel(file_path)
 df['Time'] = pd.to_datetime(df['DepartTime'], errors='coerce').dt.time
 
 # Streamlit UI
+st.set_page_config(layout="wide")
 st.title("🚌 Bus Route Time Optimizer")
 
 # Select operating day
@@ -151,7 +152,8 @@ if show_all:
             path, duration = result
             found_any = True
             with columns[idx % 2]:
-                st.markdown(f"**Start Time:** {s_time.strftime('%H:%M')}<br>**Trip Duration:** {duration} minutes", unsafe_allow_html=True)
+                st.markdown(f"<h4 style='margin-bottom:0'>🕒 Start Time: {s_time.strftime('%H:%M')}</h4>", unsafe_allow_html=True)
+                st.markdown(f"<h5 style='margin-top:0'>⏱️ Trip Duration: {duration} minutes</h5>", unsafe_allow_html=True)
                 previous_route = None
                 for step in path:
                     if step['transfer']:
