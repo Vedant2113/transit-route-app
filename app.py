@@ -55,19 +55,6 @@ body {
     padding-bottom: 0.5rem;
     position: relative;
 }
-.swap-button-container:hover::before {
-    content: "Switch Start & Destination";
-    position: absolute;
-    top: -28px;
-    background-color: #222;
-    color: #eee;
-    padding: 4px 10px;
-    border-radius: 5px;
-    font-size: 0.8rem;
-    white-space: nowrap;
-    z-index: 10;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.4);
-}
 .swap-button {
     background: #333;
     color: white;
@@ -81,7 +68,20 @@ body {
     align-items: center;
     box-shadow: 0 2px 5px rgba(0,0,0,0.25);
     transition: background 0.3s ease;
-    z-index: 5;
+    z-index: 2;
+}
+.swap-button-container:hover .swap-button::before {
+    content: "Switch Start & Destination";
+    position: absolute;
+    top: -28px;
+    background-color: #222;
+    color: #eee;
+    padding: 4px 10px;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    z-index: 1;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.4);
 }
 .swap-button:hover {
     background: #555;
