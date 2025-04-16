@@ -85,9 +85,11 @@ if 'end_display' not in st.session_state:
 
 # Swap trigger button
 swap = False
-col1, col2, col3 = st.columns([5, 1, 5])
+col1, col2, col3 = st.columns([4.5, 1, 4.5])
 with col2:
+    st.markdown("<div style='margin-top: 2.2rem; text-align: center;'>", unsafe_allow_html=True)
     swap = st.button("🔄", help="Switch start and destination")
+    st.markdown("</div>", unsafe_allow_html=True)
 
 # Handle swap before dropdowns
 if swap:
