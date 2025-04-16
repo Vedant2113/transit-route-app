@@ -44,6 +44,21 @@ time_options = sorted(df['Time'].dropna().unique())
 default_time = min(time_options) if time_options else time(6, 0)
 user_time = st.time_input("Select earliest available departure time", value=default_time)
 
+# UI input
+all_displays = sorted(df['StopDisplay'].dropna().unique())
+start_display = st.selectbox("Select starting stop", all_displays, index=0)
+end_display = st.selectbox("Select destination stop", all_displays, index=1)
+
+# Reverse button
+if st.button("🔄 Reverse Route"):
+    start_display, end_display = end_display, start_display
+
+start = stop_display_map[start_display]
+end = stop_display_map[end_display]
+
+trip_type = st.radio("Trip type", options=["One-way"])
+show_all = st.checkbox("Show all possible routes without selecting time")
+
 # Build graph
 G = nx.DiGraph()
 df = df[df['Time'].notnull()].sort_values(by=['Stop Location', 'Time'])
@@ -129,16 +144,6 @@ def find_transfer_path(start, end, start_time):
     })
 
     return result, int(shortest_cost), best_start_time
-
-# UI input
-all_displays = sorted(df['StopDisplay'].dropna().unique())
-start_display = st.selectbox("Select starting stop", all_displays, index=0)
-end_display = st.selectbox("Select destination stop", all_displays, index=1)
-start = stop_display_map[start_display]
-end = stop_display_map[end_display]
-
-trip_type = st.radio("Trip type", options=["One-way"])
-show_all = st.checkbox("Show all possible routes without selecting time")
 
 # Display routes
 if show_all:
