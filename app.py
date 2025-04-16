@@ -104,6 +104,7 @@ def find_transfer_path(start, end, start_time):
 
     shortest_path = None
     shortest_cost = float('inf')
+    best_start_time = None
 
     for start_node in candidates:
         for end_node in targets:
@@ -113,6 +114,7 @@ def find_transfer_path(start, end, start_time):
                 if cost < shortest_cost:
                     shortest_cost = cost
                     shortest_path = path
+                    best_start_time = start_node[1]  # Corrected start time
             except nx.NetworkXNoPath:
                 continue
 
@@ -143,7 +145,7 @@ def find_transfer_path(start, end, start_time):
         'transfer': False
     })
 
-    return result, int(shortest_cost)
+    return result, int(shortest_cost), best_start_time
 
 # User input
 all_displays = sorted(df['StopDisplay'].dropna().unique())
@@ -162,9 +164,9 @@ if show_all:
     for s_time in all_times:
         result = find_transfer_path(start, end, s_time)
         if isinstance(result, tuple):
-            path, duration = result
+            path, duration, correct_start_time = result
             found_any = True
-            st.write(f"🕒 **Start Time:** {s_time.strftime('%H:%M')}")
+            st.write(f"🕒 **Start Time:** {correct_start_time.strftime('%H:%M')}")
             st.write(f"⏱️ **Trip Duration:** {duration} minutes")
             previous_route = None
             for step in path:
@@ -185,8 +187,9 @@ elif st.button("Find Shortest Time"):
     if isinstance(result, str):
         st.error(result)
     else:
-        route, duration = result
+        route, duration, correct_start_time = result
         st.success(f"Trip time: {duration} minutes")
+        st.write(f"🕒 **Start Time:** {correct_start_time.strftime('%H:%M')}")
         st.write("### Route Details:")
         previous_route = None
         for step in route:
