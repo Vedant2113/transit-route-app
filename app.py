@@ -67,6 +67,7 @@ st.markdown("""
         }
     </style>
 """, unsafe_allow_html=True)
+st.title("🚌 Bus Route Time Optimizer")
 
 # Clear previous titles if duplicated
 if 'title_rendered' not in st.session_state:
