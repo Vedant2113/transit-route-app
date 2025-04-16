@@ -13,9 +13,9 @@ st.set_page_config(layout="wide")
 st.markdown("""
     <style>
         body {
-            background-color: #f7f7f7;
+            background-color: #0f0f0f;
             font-family: 'Segoe UI', sans-serif;
-            color: #000000;
+            color: #ffffff;
         }
         .main > div {
             display: flex;
@@ -26,18 +26,15 @@ st.markdown("""
             width: 100%;
             max-width: 1080px;
             padding: 2rem 3rem;
-            background: white;
+            background: #000000;
             border-radius: 16px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            color: #000000;
+            box-shadow: 0 10px 25px rgba(255, 255, 255, 0.1);
+            color: #ffffff;
             position: relative;
-        }
-        label, .stSelectbox, .stRadio, .stTimeInput, .stCheckbox {
-            color: #000000 !important;
         }
         .stSelectbox > div, .stRadio > div, .stTimeInput > div, .stCheckbox > div {
             margin-bottom: 1rem;
-            color: #000000;
+            color: #ffffff;
         }
         .stButton button {
             width: 100%;
@@ -74,7 +71,7 @@ st.markdown("""
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 3px rgba(255,255,255,0.1);
             transition: background 0.3s ease;
             z-index: 2;
             position: relative;
@@ -83,8 +80,8 @@ st.markdown("""
             content: "";
             position: absolute;
             top: -42px;
-            background-color: #555;
-            color: #fff;
+            background-color: #ffffff;
+            color: #000000;
             padding: 4px 10px;
             border-radius: 5px;
             font-size: 0.8rem;
