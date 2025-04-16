@@ -48,18 +48,18 @@ st.markdown("""
         font-size: 20px;
     }
     .swap-button {
-        background: #444;
-        color: white;
-        border: none;
-        border-radius: 50%;
-        font-size: 20px;
-        width: 44px;
-        height: 44px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-top: 2.8rem;
-    }
+    background: #444;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 20px;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
     .swap-button:hover {
         background: #666;
     }
@@ -106,9 +106,9 @@ swap = False
 col1, col2, col3 = st.columns([4.2, 0.6, 4.2])
 with col2:
     st.markdown("""
-        <div style='display: flex; justify-content: center; align-items: center; height: 100%; margin-top: 2.5rem;'>
-            <button class='swap-button' onclick='document.querySelector("button[kind=\"secondary\"]").click();'>🔄</button>
-        </div>
+        <div style='display: flex; justify-content: center; align-items: center; margin-top: 1.5rem;'>
+    <button class='swap-button' onclick='document.querySelector("button[kind=\"secondary\"]").click();'>🔄</button>
+</div>
     """, unsafe_allow_html=True)
     swap = st.button("", key="swap_button", help="Switch start and destination")
 
