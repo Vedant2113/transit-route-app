@@ -14,14 +14,41 @@ df['Time'] = pd.to_datetime(df['DepartTime'], errors='coerce').dt.time
 st.set_page_config(layout="wide")
 st.markdown("""
     <style>
+        body {
+            background-image: url('https://raw.githubusercontent.com/your-username/your-repo/main/slcPTCover11.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            font-family: 'Segoe UI', sans-serif;
+        }
         .main > div {
             display: flex;
             justify-content: center;
+            padding: 2rem 1rem;
         }
         .block-container {
-            max-width: 800px;
-            padding-left: 2rem;
-            padding-right: 2rem;
+            max-width: 880px;
+            background: rgba(7, 53, 49, 0.85);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            color: white;
+        }
+        .stSelectbox > div > label, .stRadio > div > label, .stTimeInput > div > label, .stCheckbox > div > label {
+            color: white !important;
+            font-weight: 600;
+        }
+        .stButton button {
+            width: 100%;
+            background-color: #f6c700;
+            color: black;
+            border-radius: 6px;
+            font-size: 1rem;
+            padding: 0.75rem;
+            margin-top: 1.25rem;
+        }
+        .stButton button:hover {
+            background-color: #dab700;
         }
         .route-row {
             display: flex;
@@ -31,13 +58,20 @@ st.markdown("""
         .route-selectbox {
             flex-grow: 1;
         }
-        .route-switch {
-            padding: 0 10px;
-            font-size: 20px;
+        .swap-button {
+            background: #f6c700;
+            color: black;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            margin: 0 auto 1rem auto;
+            display: block;
         }
     </style>
 """, unsafe_allow_html=True)
-
 st.title("🚌 Bus Route Time Optimizer")
 
 # Select operating day
