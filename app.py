@@ -37,7 +37,7 @@ st.markdown("""
             color: #ffffff;
         }
         .stButton button {
-            width: 100%;
+            width: 60%;
             background-color: #ffcc00;
             color: #000000;
             border-radius: 8px;
@@ -45,6 +45,8 @@ st.markdown("""
             font-weight: bold;
             padding: 0.75rem;
             transition: background 0.3s ease;
+            display: block;
+            margin: 0 auto;
         }
         .stButton button:hover {
             background-color: #e6b800;
