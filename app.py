@@ -231,9 +231,10 @@ if show_all:
             st.write(f"🕒 **Start Time:** {correct_start_time.strftime('%H:%M')}")
             st.write(f"⏱️ **Trip Duration:** {duration} minutes")
             previous_route = None
-            for step in path:
+            for i, step in enumerate(path):
                 if step['transfer']:
-                    st.markdown(f"<div style='background-color:#d4edda; color:#155724; padding:0.5rem; border-radius:6px; margin-bottom:0.5rem; font-weight:bold;'>🔁 Transfer at {step['stop']} ({step['town']}) — wait and take Route {path[path.index(step)+1]['route']} at {step['time']}</div>", unsafe_allow_html=True)
+                    next_route = path[i + 1]['route'] if i + 1 < len(path) else "Unknown"
+                    st.markdown(f"<div style='background-color:#d4edda; color:#155724; padding:0.5rem; border-radius:6px; margin-bottom:0.5rem; font-weight:bold;'>🔁 Transfer at {step['stop']} ({step['town']}) from Route {previous_route} to Route {next_route} at {step['time']}</div>", unsafe_allow_html=True)
                 else:
                     transfer_notice = f" (Transfer to Route {step['route']})" if previous_route and step['route'] != previous_route else ""
                     st.write(f"➡️ {step['stop']} ({step['town']}) via Route {step['route']}{transfer_notice} at {step['time']}")
@@ -253,10 +254,12 @@ elif st.button("Find Shortest Time"):
         st.write(f"🕒 **Start Time:** {correct_start_time.strftime('%H:%M')}")
         st.write("### Route Details:")
         previous_route = None
-        for step in route:
+        for i, step in enumerate(route):
             if step['transfer']:
-                st.markdown(f"<div style='background-color:#d4edda; color:#155724; padding:0.5rem; border-radius:6px; margin-bottom:0.5rem; font-weight:bold;'>🔁 Transfer at {step['stop']} ({step['town']}) — wait and take Route {route[route.index(step)+1]['route']} at {step['time']}</div>", unsafe_allow_html=True)
+                next_route = route[i + 1]['route'] if i + 1 < len(route) else "Unknown"
+                st.markdown(f"<div style='background-color:#d4edda; color:#155724; padding:0.5rem; border-radius:6px; margin-bottom:0.5rem; font-weight:bold;'>🔁 Transfer at {step['stop']} ({step['town']}) from Route {previous_route} to Route {next_route} at {step['time']}</div>", unsafe_allow_html=True)
             else:
                 transfer_notice = f" (Transfer to Route {step['route']})" if previous_route and step['route'] != previous_route else ""
                 st.write(f"➡️ {step['stop']} ({step['town']}) via Route {step['route']}{transfer_notice} at {step['time']}")
             previous_route = step['route']
+
