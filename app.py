@@ -192,7 +192,7 @@ if show_all:
             found_any = True
             st.write(f"🕒 **Start Time:** {correct_start_time.strftime('%H:%M')}")
             st.write(f"⏱️ **Trip Duration:** {duration} minutes")
-            previous_route = None
+    
             for step in path:
                 if step['transfer']:
                     st.markdown(f"<span class='transfer-step'>🔁 Transfer at {step['stop']} ({step['town']}) — wait and take Route {route[route.index(step)+1]['route']} at {step['time']}</span>", unsafe_allow_html=True)
@@ -205,7 +205,7 @@ if show_all:
     if not found_any:
         st.warning("No available routes found from this stop to the destination.")
 
-elif st.button("Find Shortest Time"):
+elif st.button("Find Shortestelif st.button("Find Shortest Time"):
     result = find_transfer_path(start, end, user_time)
     if isinstance(result, str):
         st.error(result)
@@ -214,20 +214,17 @@ elif st.button("Find Shortest Time"):
         st.success(f"Trip time: {duration} minutes")
         st.write(f"🕒 **Start Time:** {correct_start_time.strftime('%H:%M')}")
         st.markdown("""
-    <style>
-    .transfer-step {
-        color: #2ecc71;
-        font-weight: bold;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-st.write("### Route Details:")
-        previous_route = None
+        <style>
+        .transfer-step {
+            color: #2ecc71;
+            font-weight: bold;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+        st.write("### Route Details:")e
         for step in route:
             if step['transfer']:
-                st.write(f"🔁 Transfer at {step['stop']} ({step['town']}) — wait and take Route {route[route.index(step)+1]['route']} at {step['time']}")
-            else:
-                transfer_notice = f" (Transfer to Route {step['route']})" if previous_route and step['route'] != previous_route else ""
+                st.write(f"🔁 Transfer at {stst.markdown(f"<span class='transfer-step'>🔁 Transfer at {step['stop']} ({step['town']}) — wait and take Route {route[route.index(step)+1]['route']} at {step['time']}</span>", unsafe_allow_html=True)      transfer_notice = f" (Transfer to Route {step['route']})" if previous_route and step['route'] != previous_route else ""
                 st.write(f"➡️ {step['stop']} ({step['town']}) via Route {step['route']}{transfer_notice} at {step['time']}")
             previous_route = step['route']
 
