@@ -15,7 +15,7 @@ st.set_page_config(layout="wide")
 st.markdown("""
     <style>
         body {
-            background-image: url('https://raw.githubusercontent.com/your-username/your-repo/main/slcPTCover11.jpg');
+            background-image: url('https://raw.githubusercontent.com/Vedant2113/transit-route-app/aeceed40e6b8e0bc0e801e2a56e923e9f95d8e9d/slcPTCover11.jpg');
             background-size: cover;
             background-repeat: no-repeat;
             background-position: center;
@@ -70,8 +70,18 @@ st.markdown("""
             margin: 0 auto 1rem auto;
             display: block;
         }
+        .highlight-transfer {
+            background-color: #fceabb;
+            padding: 0.5rem;
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+            color: black;
+            font-weight: bold;
+        }
     </style>
 """, unsafe_allow_html=True)
+
+st.title("🚌 Bus Route Time Optimizer")
 st.title("🚌 Bus Route Time Optimizer")
 
 # Select operating day
