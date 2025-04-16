@@ -50,6 +50,7 @@ df = df[df[selected_day] == 1]
 # Add town to stop name for display
 df['StopDisplay'] = df['Stop Location'].str.replace(r'\s*\(Loop\)', '', regex=True).fillna('Unknown Stop') + " (" + df['Town'].fillna('Unknown Town') + ")"
 stop_display_map = dict(zip(df['StopDisplay'], df['Stop Location']))
+reverse_stop_display_map = {v: k for k, v in stop_display_map.items()}
 all_displays = sorted(df['StopDisplay'].dropna().unique())
 
 # Limit time options
@@ -69,9 +70,12 @@ with col1:
     start_display = st.selectbox("Select starting stop", all_displays, index=all_displays.index(st.session_state['start_display']), key="start")
 with col2:
     if st.button("🔄", help="Switch start and destination"):
-        temp_start = st.session_state['start_display']
-        st.session_state['start_display'] = st.session_state['end_display']
-        st.session_state['end_display'] = temp_start
+        # Convert display to stop names for reliable switching
+        stop_name_1 = stop_display_map[st.session_state['start_display']]
+        stop_name_2 = stop_display_map[st.session_state['end_display']]
+        # Switch and convert back to display
+        st.session_state['start_display'] = reverse_stop_display_map[stop_name_2]
+        st.session_state['end_display'] = reverse_stop_display_map[stop_name_1]
         start_display = st.session_state['start_display']
         end_display = st.session_state['end_display']
 with col3:
@@ -87,7 +91,7 @@ end = stop_display_map[end_display]
 trip_type = st.radio("Trip type", options=["One-way"])
 show_all = st.checkbox("Show all possible routes without selecting time")
 
-# [rest of code remains unchanged after this line]
+#Graph
 G = nx.DiGraph()
 df = df[df['Time'].notnull()].sort_values(by=['Stop Location', 'Time'])
 
