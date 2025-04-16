@@ -35,28 +35,25 @@ selected_day = st.selectbox("Select operating day", days_of_week, index=datetime
 # Filter data by selected day
 df = df[df[selected_day] == 1]
 
-# Add town to stop name for display, remove (Loop)
+# Add town to stop name for display
 df['StopDisplay'] = df['Stop Location'].str.replace(r'\s*\(Loop\)', '', regex=True).fillna('Unknown Stop') + " (" + df['Town'].fillna('Unknown Town') + ")"
 stop_display_map = dict(zip(df['StopDisplay'], df['Stop Location']))
 
-# Limit time options to available departure times only
+# Limit time options
 time_options = sorted(df['Time'].dropna().unique())
 default_time = min(time_options) if time_options else time(6, 0)
 user_time = st.time_input("Select earliest available departure time", value=default_time)
 
-# Build a time-expanded graph (stop, time) nodes
+# Build graph
 G = nx.DiGraph()
 df = df[df['Time'].notnull()].sort_values(by=['Stop Location', 'Time'])
 
-# Add edges for travel along the same route
 for route in df['Route'].unique():
     route_df = df[df['Route'] == route].copy()
-
     if route == '68':
         hospital_times = route_df[route_df['Stop Location'] == 'Canton-Potsdam Hospital']['Time']
         if hospital_times.empty:
             route_df = route_df[route_df['Stop Location'] != 'Canton-Potsdam Hospital']
-
     route_df = route_df.sort_values(by='Time')
     for i in range(len(route_df) - 1):
         row_a = route_df.iloc[i]
@@ -69,15 +66,9 @@ for route in df['Route'].unique():
             dt_b += timedelta(days=1)
         duration = (dt_b - dt_a).total_seconds() / 60.0
         if duration >= 0:
-            G.add_edge(
-                (row_a['Stop Location'], time_a),
-                (row_b['Stop Location'], time_b),
-                weight=duration,
-                route=route,
-                town=row_a['Town']
-            )
+            G.add_edge((row_a['Stop Location'], time_a), (row_b['Stop Location'], time_b), weight=duration, route=route, town=row_a['Town'])
 
-# Add transfer edges (waiting at same stop)
+# Add transfers
 for stop, group in df.groupby('Stop Location'):
     times = sorted(group['Time'].unique())
     for i in range(len(times) - 1):
@@ -89,19 +80,12 @@ for stop, group in df.groupby('Stop Location'):
             dt2 += timedelta(days=1)
         wait = (dt2 - dt1).total_seconds() / 60.0
         if wait > 0:
-            G.add_edge(
-                (stop, t1),
-                (stop, t2),
-                weight=wait,
-                route='Transfer',
-                town=group.iloc[0]['Town']
-            )
+            G.add_edge((stop, t1), (stop, t2), weight=wait, route='Transfer', town=group.iloc[0]['Town'])
 
-# Find shortest path function
+# Shortest path finder
 def find_transfer_path(start, end, start_time):
     candidates = [(s, t) for s, t in G.nodes if s == start and t >= start_time]
     targets = [(s, t) for s, t in G.nodes if s == end]
-
     shortest_path = None
     shortest_cost = float('inf')
     best_start_time = None
@@ -114,7 +98,7 @@ def find_transfer_path(start, end, start_time):
                 if cost < shortest_cost:
                     shortest_cost = cost
                     shortest_path = path
-                    best_start_time = start_node[1]  # Corrected start time
+                    best_start_time = start_node[1]
             except nx.NetworkXNoPath:
                 continue
 
@@ -126,14 +110,13 @@ def find_transfer_path(start, end, start_time):
         stop, t = shortest_path[i]
         next_stop, t2 = shortest_path[i + 1]
         edge = G[shortest_path[i]][shortest_path[i + 1]]
-        action = {
+        result.append({
             'stop': stop,
             'town': edge['town'],
             'route': edge['route'],
             'time': t.strftime("%H:%M"),
             'transfer': edge['route'] == 'Transfer'
-        }
-        result.append(action)
+        })
 
     final_stop, final_time = shortest_path[-1]
     final_town = df[df['Stop Location'] == final_stop]['Town'].iloc[0] if not df[df['Stop Location'] == final_stop].empty else '-'
@@ -147,7 +130,7 @@ def find_transfer_path(start, end, start_time):
 
     return result, int(shortest_cost), best_start_time
 
-# User input
+# UI input
 all_displays = sorted(df['StopDisplay'].dropna().unique())
 start_display = st.selectbox("Select starting stop", all_displays, index=0)
 end_display = st.selectbox("Select destination stop", all_displays, index=1)
@@ -157,14 +140,19 @@ end = stop_display_map[end_display]
 trip_type = st.radio("Trip type", options=["One-way"])
 show_all = st.checkbox("Show all possible routes without selecting time")
 
-# Show all available routes vertically (back to normal appearance)
+# Display routes
 if show_all:
     found_any = False
+    shown_paths = set()
     all_times = sorted([t for s, t in G.nodes if s == start])
     for s_time in all_times:
         result = find_transfer_path(start, end, s_time)
         if isinstance(result, tuple):
             path, duration, correct_start_time = result
+            path_signature = tuple((step['stop'], step['route'], step['time']) for step in path)
+            if path_signature in shown_paths:
+                continue
+            shown_paths.add(path_signature)
             found_any = True
             st.write(f"🕒 **Start Time:** {correct_start_time.strftime('%H:%M')}")
             st.write(f"⏱️ **Trip Duration:** {duration} minutes")
@@ -181,7 +169,6 @@ if show_all:
     if not found_any:
         st.warning("No available routes found from this stop to the destination.")
 
-# Show single route based on selected time
 elif st.button("Find Shortest Time"):
     result = find_transfer_path(start, end, user_time)
     if isinstance(result, str):
