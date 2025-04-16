@@ -90,7 +90,7 @@ end = stop_display_map[end_display]
 trip_type = st.radio("Trip type", options=["One-way"])
 show_all = st.checkbox("Show all possible routes without selecting time")
 
-#Graph
+# Graph construction
 G = nx.DiGraph()
 df = df[df['Time'].notnull()].sort_values(by=['Stop Location', 'Time'])
 
@@ -222,3 +222,62 @@ elif st.button("Find Shortest Time"):
                 transfer_notice = f" (Transfer to Route {step['route']})" if previous_route and step['route'] != previous_route else ""
                 st.write(f"➡️ {step['stop']} ({step['town']}) via Route {step['route']}{transfer_notice} at {step['time']}")
             previous_route = step['route']
+
+import plotly.graph_objects as go
+
+# Display route using curved roadmap style
+example_result = [
+    {"stop": "Potsdam Walmart", "town": "Potsdam", "route": "65", "time": "10:00"},
+    {"stop": "Urgent Care", "town": "Potsdam", "route": "65", "time": "10:15"},
+    {"stop": "Canton-Potsdam Hospital", "town": "Potsdam", "route": "Transfer", "time": "10:30", "transfer": True},
+    {"stop": "Claxton-Hepburn Hospital", "town": "Ogdensburg", "route": "68", "time": "11:10"}
+]
+
+st.subheader("🗺️ Route Preview (Curved Roadmap)")
+
+# Build coordinates for curved roadmap
+x_coords = list(range(len(example_result)))
+y_coords = [0.5 + 0.2 * (-1)**i for i in range(len(example_result))]
+
+fig = go.Figure()
+
+# Add curved lines
+for i in range(len(example_result) - 1):
+    fig.add_trace(go.Scatter(
+        x=[x_coords[i], x_coords[i+1]],
+        y=[y_coords[i], y_coords[i+1]],
+        mode='lines',
+        line=dict(shape='spline', width=2, color='#888'),
+        showlegend=False
+    ))
+
+# Add stop markers with labels
+for i, step in enumerate(example_result):
+    icon = "🔁" if step.get("transfer") else "🚌"
+    label = f"{icon} {step['stop']} ({step['town']})<br>⏰ {step['time']} | Route {step['route']}"
+    fig.add_trace(go.Scatter(
+        x=[x_coords[i]],
+        y=[y_coords[i]],
+        mode='markers+text',
+        marker=dict(size=20, color='#1f77b4' if not step.get("transfer") else '#ff7f0e'),
+        text=[label],
+        textposition='top center',
+        hoverinfo='text',
+        showlegend=False
+    ))
+
+fig.update_layout(
+    height=400,
+    margin=dict(l=20, r=20, t=20, b=20),
+    xaxis=dict(visible=False),
+    yaxis=dict(visible=False),
+    plot_bgcolor='white',
+)
+
+st.plotly_chart(fig, use_container_width=True)
+for i, step in enumerate(example_result):
+    arrow = "" if i == len(example_result) - 1 else "
+   ⬇"
+    icon = "🔁" if step.get("transfer") else "➡️"
+    st.markdown(f"{icon} **{step['stop']}** ({step['town']})  ")
+    st.markdown(f"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;🕒 {step['time']}  |  🚌 Route {step['route']}{arrow}")
