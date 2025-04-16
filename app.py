@@ -139,21 +139,22 @@ end = stop_display_map[end_display]
 trip_type = st.radio("Trip type", options=["One-way"])
 show_all = st.checkbox("Show all possible routes without selecting time")
 
-# Show all available routes
+# Show all available routes in readable format
 if show_all:
-    routes_table = []
+    found_any = False
     for s_time in sorted([t for s, t in G.nodes if s == start]):
         result = find_transfer_path(start, end, s_time)
         if isinstance(result, tuple):
             path, duration = result
-            routes_table.append({
-                'Start Time': s_time.strftime("%H:%M"),  # 24-hour format
-                'Duration (min)': duration,
-                'Transfers': sum(1 for i in range(1, len(path)) if path[i]['route'] != path[i-1]['route'])
-            })
-    if routes_table:
-        st.dataframe(pd.DataFrame(routes_table))
-    else:
+            found_any = True
+            st.markdown(f"---\n**Start Time:** {s_time.strftime('%H:%M')}  \n**Trip Duration:** {duration} minutes")
+
+            previous_route = None
+            for step in path:
+                transfer_notice = f" (Transfer to Route {step['route']})" if previous_route and step['route'] != previous_route else ""
+                st.markdown(f"➡️ **{step['stop']} ({step['town']})** via Route **{step['route']}**{transfer_notice} at **{step['time']}**")
+                previous_route = step['route']
+    if not found_any:
         st.warning("No available routes found from this stop to the destination.")
 
 # Show single route based on selected time
@@ -167,6 +168,6 @@ elif st.button("Find Shortest Time"):
         st.write("### Route Details:")
         previous_route = None
         for step in route:
-            transfer_notice = f" (Transfer to {step['route']})" if previous_route and step['route'] != previous_route else ""
+            transfer_notice = f" (Transfer to Route {step['route']})" if previous_route and step['route'] != previous_route else ""
             st.write(f"➡️ {step['stop']} ({step['town']}) via Route {step['route']}{transfer_notice} at {step['time']}")
             previous_route = step['route']
