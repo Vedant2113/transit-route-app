@@ -49,66 +49,33 @@ st.markdown("""
         .stButton button:hover {
             background-color: #e6b800;
         }
-        .swap-button-container {
+        .route-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1.5rem;
+        }
+        .route-selectbox {
+            flex-grow: 1;
+        }
+        .swap-center {
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 60px;
-            padding-top: 0.5rem;
-            padding-bottom: 0.5rem;
-            margin-top: -0.5rem;
-            margin-bottom: 1rem;
-            position: relative;
+            margin: 1rem auto;
         }
-        .swap-button {
+        .swap-center button {
             background: #eeeeee;
             color: #000000;
             border: 1px solid #ccc;
             border-radius: 4px;
             font-size: 18px;
-            width: 36px;
-            height: 36px;
+            width: 40px;
+            height: 40px;
             display: flex;
             justify-content: center;
             align-items: center;
             box-shadow: 0 1px 3px rgba(255,255,255,0.1);
-            transition: background 0.3s ease;
-            z-index: 2;
-            position: relative;
-        }
-        .swap-button::before {
-            content: "";
-            position: absolute;
-            top: -42px;
-            background-color: #ffffff;
-            color: #000000;
-            padding: 4px 10px;
-            border-radius: 5px;
-            font-size: 0.8rem;
-            white-space: nowrap;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            pointer-events: none;
-            z-index: 1;
-        }
-        .swap-button-container:hover .swap-button::before {
-            content: "Switch Stops";
-            opacity: 1;
-        }
-        .swap-button:hover {
-            background: #dddddd;
-        }
-        .route-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .route-selectbox {
-            flex-grow: 1;
-        }
-        .route-switch {
-            padding: 0 10px;
-            font-size: 20px;
         }
         .transfer-step {
             color: #2a9d8f;
@@ -116,6 +83,7 @@ st.markdown("""
         }
     </style>
 """, unsafe_allow_html=True)
+
 st.title("🚌 Bus Route Time Optimizer")
 
 # Select operating day
