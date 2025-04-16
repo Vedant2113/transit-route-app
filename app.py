@@ -106,7 +106,7 @@ swap = False
 col1, col2, col3 = st.columns([4.2, 0.6, 4.2])
 with col2:
     st.markdown("""
-        <div style='display: flex; justify-content: center; align-items: center; margin-top: 1.5rem;'>
+        <div style='display: flex; justify-content: center; align-items: center; margin-top: 2.4rem; height: 40px;'>
     <button class='swap-button' onclick='document.querySelector("button[kind=\"secondary\"]").click();'>🔄</button>
 </div>
     """, unsafe_allow_html=True)
