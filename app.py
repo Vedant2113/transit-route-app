@@ -259,7 +259,7 @@ for i, step in enumerate(example_result):
         x=[x_coords[i]],
         y=[y_coords[i]],
         mode='markers+text',
-        marker=dict(size=20, color='#1f77b4' if not step.get("transfer") else '#ff7f0e'),
+        marker=dict(size=20, color='#1f77b4' if not step.get("transfer") else '#e74c3c'),
         text=[label],
         textposition='top center',
         hoverinfo='text',
