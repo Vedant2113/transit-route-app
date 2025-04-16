@@ -57,7 +57,11 @@ all_displays = sorted(df['StopDisplay'].dropna().unique())
 # Limit time options
 time_options = sorted(df['Time'].dropna().unique())
 default_time = min(time_options) if time_options else time(6, 0)
-time_mode = st.radio("Select departure time preference", ["Specific Time", "Any Time"])
+colt1, colt2 = st.columns([1, 1])
+with colt1:
+    time_mode = st.radio("Time Mode", ["Specific Time", "Any Time"], horizontal=True)
+with colt2:
+    user_time = default_time if time_mode == "Any Time" else st.time_input("Select earliest available departure time", value=default_time)
 user_time = default_time if time_mode == "Any Time" else st.time_input("Select earliest available departure time", value=default_time)
 
 # Initialize session state defaults
@@ -182,7 +186,7 @@ def find_transfer_path(start, end, start_time):
 if show_all:
     found_any = False
     shown_paths = set()
-    all_times = sorted([t for s, t in G.nodes if s == start])
+    all_times = sorted(set(t for s, t in G.nodes if s == start))[:10]  # Limit to earliest 10
     for s_time in all_times:
         result = find_transfer_path(start, end, s_time)
         if isinstance(result, tuple):
