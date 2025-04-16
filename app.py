@@ -275,9 +275,4 @@ fig.update_layout(
 )
 
 st.plotly_chart(fig, use_container_width=True)
-for i, step in enumerate(example_result):
-    arrow = "" if i == len(example_result) - 1 else "
-   ⬇"
-    icon = "🔁" if step.get("transfer") else "➡️"
-    st.markdown(f"{icon} **{step['stop']}** ({step['town']})  ")
-    st.markdown(f"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;🕒 {step['time']}  |  🚌 Route {step['route']}{arrow}")
+# Removed duplicated route preview loop; already shown using Plotly
