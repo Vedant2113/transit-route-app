@@ -12,17 +12,23 @@ df['Time'] = pd.to_datetime(df['DepartTime'], errors='coerce').dt.time
 st.set_page_config(layout="wide")
 st.markdown("""
     <style>
+        body {
+            background-color: #f7f7f7;
+            font-family: 'Segoe UI', sans-serif;
+        }
         .main > div {
             display: flex;
             justify-content: center;
+            padding: 2rem 1rem;
         }
         .block-container {
+            width: 100%;
             max-width: 1080px;
             padding: 2rem 3rem;
-            background: #1a1a1a;
+            background: white;
             border-radius: 16px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-            color: #ffffff;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            color: #333;
             position: relative;
         }
         .stSelectbox > div, .stRadio > div, .stTimeInput > div, .stCheckbox > div {
@@ -30,8 +36,8 @@ st.markdown("""
         }
         .stButton button {
             width: 100%;
-            background-color: #ff5c5c;
-            color: white;
+            background-color: #ffcc00;
+            color: #222;
             border-radius: 8px;
             font-size: 1rem;
             font-weight: bold;
@@ -39,7 +45,7 @@ st.markdown("""
             transition: background 0.3s ease;
         }
         .stButton button:hover {
-            background-color: #e04e4e;
+            background-color: #e6b800;
         }
         .swap-button-container {
             display: flex;
@@ -53,30 +59,30 @@ st.markdown("""
             position: relative;
         }
         .swap-button {
-            background: #333;
-            color: white;
-            border: none;
-            border-radius: 50%;
+            background: #eeeeee;
+            color: #333;
+            border: 1px solid #ccc;
+            border-radius: 4px;
             font-size: 18px;
-            width: 42px;
-            height: 42px;
+            width: 36px;
+            height: 36px;
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.25);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             transition: background 0.3s ease;
             z-index: 2;
             position: relative;
         }
         .swap-button::before {
-            content: "Switch Start & Destination";
+            content: "";
             position: absolute;
             top: -42px;
-            background-color: #222;
-            color: #eee;
+            background-color: #555;
+            color: #fff;
             padding: 4px 10px;
             border-radius: 5px;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             white-space: nowrap;
             opacity: 0;
             transition: opacity 0.3s ease;
@@ -84,10 +90,11 @@ st.markdown("""
             z-index: 1;
         }
         .swap-button-container:hover .swap-button::before {
+            content: "Switch Stops";
             opacity: 1;
         }
         .swap-button:hover {
-            background: #555;
+            background: #dddddd;
         }
         .route-row {
             display: flex;
@@ -102,7 +109,7 @@ st.markdown("""
             font-size: 20px;
         }
         .transfer-step {
-            color: #34eb77;
+            color: #2a9d8f;
             font-weight: bold;
         }
     </style>
