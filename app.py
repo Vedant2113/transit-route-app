@@ -23,12 +23,13 @@ body {
 }
 .block-container {
     width: 100%;
-    max-width: 1040px;
+    max-width: 1080px;
     padding: 2.5rem 3rem;
     background: #1a1a1a;
     border-radius: 16px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
     color: #ffffff;
+    position: relative;
 }
 .stSelectbox > div, .stRadio > div, .stTimeInput > div, .stCheckbox > div {
     margin-bottom: 1rem;
@@ -53,6 +54,8 @@ body {
     height: 60px;
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
     position: relative;
 }
 .swap-button {
@@ -69,19 +72,25 @@ body {
     box-shadow: 0 2px 5px rgba(0,0,0,0.25);
     transition: background 0.3s ease;
     z-index: 2;
+    position: relative;
 }
-.swap-button-container:hover .swap-button::before {
+.swap-button::before {
     content: "Switch Start & Destination";
     position: absolute;
-    top: -44px;
+    top: -42px;
     background-color: #222;
     color: #eee;
     padding: 4px 10px;
     border-radius: 5px;
     font-size: 0.9rem;
     white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
     z-index: 1;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+}
+.swap-button-container:hover .swap-button::before {
+    opacity: 1;
 }
 .swap-button:hover {
     background: #555;
@@ -92,6 +101,7 @@ body {
 }
 </style>
 """, unsafe_allow_html=True)
+
 
 
 
