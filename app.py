@@ -14,38 +14,14 @@ df['Time'] = pd.to_datetime(df['DepartTime'], errors='coerce').dt.time
 st.set_page_config(layout="wide")
 st.markdown("""
     <style>
-        body {
-            background-color: white;
-            font-family: 'Segoe UI', sans-serif;
-        }
         .main > div {
             display: flex;
             justify-content: center;
-            padding: 2rem 1rem;
         }
         .block-container {
-            max-width: 880px;
-            background: #073531;
-            padding: 2rem;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            color: white;
-        }
-        .stSelectbox > div > label, .stRadio > div > label, .stTimeInput > div > label, .stCheckbox > div > label {
-            color: white !important;
-            font-weight: 600;
-        }
-        .stButton button {
-            width: 100%;
-            background-color: #f6c700;
-            color: black;
-            border-radius: 6px;
-            font-size: 1rem;
-            padding: 0.75rem;
-            margin-top: 1.25rem;
-        }
-        .stButton button:hover {
-            background-color: #dab700;
+            max-width: 800px;
+            padding-left: 2rem;
+            padding-right: 2rem;
         }
         .route-row {
             display: flex;
@@ -55,17 +31,9 @@ st.markdown("""
         .route-selectbox {
             flex-grow: 1;
         }
-        .swap-button {
-            background: #f6c700;
-            color: black;
-            font-weight: bold;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            padding: 0.5rem 1rem;
-            cursor: pointer;
-            margin: 0 auto 1rem auto;
-            display: block;
+        .route-switch {
+            padding: 0 10px;
+            font-size: 20px;
         }
     </style>
 """, unsafe_allow_html=True)
@@ -85,31 +53,32 @@ stop_display_map = dict(zip(df['StopDisplay'], df['Stop Location']))
 reverse_stop_display_map = {v: k for k, v in stop_display_map.items()}
 all_displays = sorted(df['StopDisplay'].dropna().unique())
 
-# Time selection
-col_time_mode, col_time_input = st.columns([1, 2])
-with col_time_mode:
-    time_mode = st.radio("Time Mode", ["Specific Time", "Any Time"], horizontal=True)
+# Limit time options
 time_options = sorted(df['Time'].dropna().unique())
 default_time = min(time_options) if time_options else time(6, 0)
-with col_time_input:
-    user_time = default_time if time_mode == "Any Time" else st.time_input("Select earliest available departure time", value=default_time)
+user_time = st.time_input("Select earliest available departure time", value=default_time)
 
-# Session state defaults
+# Initialize session state defaults
 if 'start_display' not in st.session_state:
     st.session_state['start_display'] = all_displays[0]
 if 'end_display' not in st.session_state:
     st.session_state['end_display'] = all_displays[1]
 
-# Route selectors
-col1, col3 = st.columns([5, 5])
+# Swap trigger button
+swap = False
+col1, col2, col3 = st.columns([5, 1, 5])
+with col2:
+    swap = st.button("🔄", help="Switch start and destination")
+
+# Handle swap before dropdowns
+if swap:
+    st.session_state['start_display'], st.session_state['end_display'] = st.session_state['end_display'], st.session_state['start_display']
+
+# Layout for route selection
 with col1:
     start_display = st.selectbox("Select starting stop", all_displays, index=all_displays.index(st.session_state['start_display']), key="start")
 with col3:
     end_display = st.selectbox("Select destination stop", all_displays, index=all_displays.index(st.session_state['end_display']), key="end")
-
-# Swap button centered below the stop selectors
-if st.button("⇄ Swap Stops", key="swap_button"):
-    st.session_state['start_display'], st.session_state['end_display'] = st.session_state['end_display'], st.session_state['start_display']
 
 # Persist values
 st.session_state['start_display'] = start_display
@@ -121,7 +90,7 @@ end = stop_display_map[end_display]
 trip_type = st.radio("Trip type", options=["One-way"])
 show_all = st.checkbox("Show all possible routes without selecting time")
 
-# Graph
+#Graph
 G = nx.DiGraph()
 df = df[df['Time'].notnull()].sort_values(by=['Stop Location', 'Time'])
 
@@ -161,7 +130,7 @@ for stop, group in df.groupby('Stop Location'):
 
 # Shortest path finder
 def find_transfer_path(start, end, start_time):
-    candidates = [(s, t) for s, t in G.nodes if s == start and (time_mode == 'Any Time' or t >= start_time)]
+    candidates = [(s, t) for s, t in G.nodes if s == start and t >= start_time]
     targets = [(s, t) for s, t in G.nodes if s == end]
     shortest_path = None
     shortest_cost = float('inf')
