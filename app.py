@@ -2,14 +2,13 @@ import streamlit as st
 import networkx as nx
 import pandas as pd
 from datetime import datetime, timedelta, time
-import calendar
 
 # Load your Excel data
 file_path = "merged_data.xlsx"
 df = pd.read_excel(file_path)
 
-# Use 'Depart Time' directly (already in datetime.time format)
-df['Time'] = df['Depart Time']
+# Fix the time format
+df['Time'] = pd.to_datetime(df['DepartTime'], errors='coerce').dt.time
 
 # Streamlit UI
 st.title("🚌 Bus Route Time Optimizer")
@@ -22,7 +21,7 @@ selected_day = st.selectbox("Select operating day", days_of_week, index=datetime
 df = df[df[selected_day] == 1]
 
 # Add town to stop name for display, remove (Loop)
-df['StopDisplay'] = df['Stop Location'].str.replace(r'\s*\(Loop\)', '', regex=True) + " (" + df['Town'] + ")"
+df['StopDisplay'] = df['Stop Location'].str.replace(r'\s*\(Loop\)', '', regex=True).fillna('Unknown Stop') + " (" + df['Town'].fillna('Unknown Town') + ")"
 stop_display_map = dict(zip(df['StopDisplay'], df['Stop Location']))
 
 # Limit time options to available departure times only
@@ -38,7 +37,7 @@ df = df[df['Time'].notnull()].sort_values(by=['Stop Location', 'Time'])
 for route in df['Route'].unique():
     route_df = df[df['Route'] == route].copy()
 
-    # If Route 68 doesn't go to hospital at all, remove it
+    # Special logic: Remove hospital if Route 68 doesn't go there
     if route == '68':
         hospital_times = route_df[route_df['Stop Location'] == 'Canton-Potsdam Hospital']['Time']
         if hospital_times.empty:
@@ -64,7 +63,7 @@ for route in df['Route'].unique():
                 town=row_a['Town']
             )
 
-# Add transfer edges at the same stop (wait time for next bus)
+# Add transfer edges (waiting at same stop)
 for stop, group in df.groupby('Stop Location'):
     times = sorted(group['Time'].unique())
     for i in range(len(times) - 1):
@@ -84,7 +83,7 @@ for stop, group in df.groupby('Stop Location'):
                 town=group.iloc[0]['Town']
             )
 
-# Find shortest path with transfers allowed
+# Find shortest path function
 def find_transfer_path(start, end, start_time):
     candidates = [(s, t) for s, t in G.nodes if s == start and t >= start_time]
     targets = [(s, t) for s, t in G.nodes if s == end]
@@ -118,7 +117,7 @@ def find_transfer_path(start, end, start_time):
             'time': t.strftime("%I:%M %p"),
         })
 
-    # Add final stop
+    # Final stop
     final_stop, final_time = shortest_path[-1]
     final_town = df[df['Stop Location'] == final_stop]['Town'].iloc[0] if not df[df['Stop Location'] == final_stop].empty else '-'
     result.append({
@@ -140,7 +139,7 @@ end = stop_display_map[end_display]
 trip_type = st.radio("Trip type", options=["One-way"])
 show_all = st.checkbox("Show all possible routes without selecting time")
 
-# Show all possible times
+# Show all available routes
 if show_all:
     routes_table = []
     for s_time in sorted([t for s, t in G.nodes if s == start]):
@@ -157,7 +156,7 @@ if show_all:
     else:
         st.warning("No available routes found from this stop to the destination.")
 
-# Single route result
+# Show single route based on selected time
 elif st.button("Find Shortest Time"):
     result = find_transfer_path(start, end, user_time)
     if isinstance(result, str):
