@@ -12,7 +12,8 @@ df['Time'] = pd.to_datetime(df['DepartTime'], errors='coerce').dt.time
 
 # Correct the stop display by including town names explicitly to avoid confusion
 df['StopDisplay'] = df['Stop Location'].fillna('Unknown Stop') + " (" + df['Town'].fillna('Unknown Town') + ")"
-stop_display_map = dict(zip(df['StopDisplay'], df['Stop Location'] + " (" + df['Town'] + ")"))
+df['StopKey'] = df['Stop Location'].fillna('') + "||" + df['Town'].fillna('')
+stop_display_map = dict(zip(df['StopDisplay'], df['StopKey']))
 reverse_stop_display_map = {v: k for k, v in stop_display_map.items()}
 all_displays = sorted(df['StopDisplay'].dropna().unique())
 
@@ -91,10 +92,6 @@ st.markdown("""
 if 'title_rendered' not in st.session_state:
     st.title("🚌 Bus Route Time Optimizer")
     st.session_state['title_rendered'] = True
-
-
-
-st.title("🚌 Bus Route Time Optimizer")
 
 # Select operating day
 days_of_week = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
