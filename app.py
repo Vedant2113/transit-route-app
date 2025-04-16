@@ -37,7 +37,6 @@ df = df[df['Time'].notnull()].sort_values(by=['Stop Location', 'Time'])
 for route in df['Route'].unique():
     route_df = df[df['Route'] == route].copy()
 
-    # Special logic: Remove hospital if Route 68 doesn't go there
     if route == '68':
         hospital_times = route_df[route_df['Stop Location'] == 'Canton-Potsdam Hospital']['Time']
         if hospital_times.empty:
@@ -110,21 +109,23 @@ def find_transfer_path(start, end, start_time):
         stop, t = shortest_path[i]
         next_stop, t2 = shortest_path[i + 1]
         edge = G[shortest_path[i]][shortest_path[i + 1]]
-        result.append({
+        action = {
             'stop': stop,
             'town': edge['town'],
             'route': edge['route'],
-            'time': t.strftime("%H:%M"),  # 24-hour format
-        })
+            'time': t.strftime("%H:%M"),
+            'transfer': edge['route'] == 'Transfer'
+        }
+        result.append(action)
 
-    # Final stop
     final_stop, final_time = shortest_path[-1]
     final_town = df[df['Stop Location'] == final_stop]['Town'].iloc[0] if not df[df['Stop Location'] == final_stop].empty else '-'
     result.append({
         'stop': final_stop,
         'town': final_town,
         'route': result[-1]['route'] if result else '-',
-        'time': final_time.strftime("%H:%M")  # 24-hour format
+        'time': final_time.strftime("%H:%M"),
+        'transfer': False
     })
 
     return result, int(shortest_cost)
@@ -151,8 +152,11 @@ if show_all:
 
             previous_route = None
             for step in path:
-                transfer_notice = f" (Transfer to Route {step['route']})" if previous_route and step['route'] != previous_route else ""
-                st.markdown(f"➡️ **{step['stop']} ({step['town']})** via Route **{step['route']}**{transfer_notice} at **{step['time']}**")
+                if step['transfer']:
+                    st.markdown(f"🔁 **Transfer at {step['stop']} ({step['town']})** — wait and take Route **{path[path.index(step)+1]['route']}** at **{step['time']}**")
+                else:
+                    transfer_notice = f" (Transfer to Route {step['route']})" if previous_route and step['route'] != previous_route else ""
+                    st.markdown(f"➡️ **{step['stop']} ({step['town']})** via Route **{step['route']}**{transfer_notice} at **{step['time']}**")
                 previous_route = step['route']
     if not found_any:
         st.warning("No available routes found from this stop to the destination.")
@@ -168,6 +172,9 @@ elif st.button("Find Shortest Time"):
         st.write("### Route Details:")
         previous_route = None
         for step in route:
-            transfer_notice = f" (Transfer to Route {step['route']})" if previous_route and step['route'] != previous_route else ""
-            st.write(f"➡️ {step['stop']} ({step['town']}) via Route {step['route']}{transfer_notice} at {step['time']}")
+            if step['transfer']:
+                st.markdown(f"🔁 **Transfer at {step['stop']} ({step['town']})** — wait and take Route **{route[route.index(step)+1]['route']}** at **{step['time']}**")
+            else:
+                transfer_notice = f" (Transfer to Route {step['route']})" if previous_route and step['route'] != previous_route else ""
+                st.write(f"➡️ {step['stop']} ({step['town']}) via Route {step['route']}{transfer_notice} at {step['time']}")
             previous_route = step['route']
