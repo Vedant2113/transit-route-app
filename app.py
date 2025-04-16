@@ -50,6 +50,7 @@ df = df[df[selected_day] == 1]
 # Add town to stop name for display
 df['StopDisplay'] = df['Stop Location'].str.replace(r'\s*\(Loop\)', '', regex=True).fillna('Unknown Stop') + " (" + df['Town'].fillna('Unknown Town') + ")"
 stop_display_map = dict(zip(df['StopDisplay'], df['Stop Location']))
+all_displays = sorted(df['StopDisplay'].dropna().unique())
 
 # Limit time options
 time_options = sorted(df['Time'].dropna().unique())
@@ -58,9 +59,9 @@ user_time = st.time_input("Select earliest available departure time", value=defa
 
 # Initialize session state defaults if not already set
 if 'start_display' not in st.session_state:
-    st.session_state['start_display'] = df['StopDisplay'].iloc[0]
+    st.session_state['start_display'] = all_displays[0]
 if 'end_display' not in st.session_state:
-    st.session_state['end_display'] = df['StopDisplay'].iloc[1]
+    st.session_state['end_display'] = all_displays[1]
 
 # Layout for route selection
 col1, col2, col3 = st.columns([5, 1, 5])
@@ -68,7 +69,9 @@ with col1:
     st.session_state['start_display'] = st.selectbox("Select starting stop", all_displays, index=all_displays.index(st.session_state['start_display']), key="start")
 with col2:
     if st.button("🔄", help="Switch start and destination"):
-        st.session_state['start_display'], st.session_state['end_display'] = st.session_state['end_display'], st.session_state['start_display']
+        tmp = st.session_state['start_display']
+        st.session_state['start_display'] = st.session_state['end_display']
+        st.session_state['end_display'] = tmp
 with col3:
     st.session_state['end_display'] = st.selectbox("Select destination stop", all_displays, index=all_displays.index(st.session_state['end_display']), key="end")
 
@@ -80,6 +83,9 @@ end = stop_display_map[end_display]
 
 trip_type = st.radio("Trip type", options=["One-way"])
 show_all = st.checkbox("Show all possible routes without selecting time")
+
+# [rest of code remains unchanged after this line]
+
 # Build graph
 G = nx.DiGraph()
 df = df[df['Time'].notnull()].sort_values(by=['Stop Location', 'Time'])
