@@ -81,7 +81,6 @@ if 'title_rendered' not in st.session_state:
     st.title("🚌 Bus Route Time Optimizer")
     st.session_state['title_rendered'] = True
 
-st.title("🚌 Bus Route Time Optimizer")
 
 # Clear previous titles if duplicated
 if 'title_rendered' not in st.session_state:
