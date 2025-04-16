@@ -114,7 +114,7 @@ def find_transfer_path(start, end, start_time):
             'stop': stop,
             'town': edge['town'],
             'route': edge['route'],
-            'time': t.strftime("%I:%M %p"),
+            'time': t.strftime("%H:%M"),  # 24-hour format
         })
 
     # Final stop
@@ -124,7 +124,7 @@ def find_transfer_path(start, end, start_time):
         'stop': final_stop,
         'town': final_town,
         'route': result[-1]['route'] if result else '-',
-        'time': final_time.strftime("%I:%M %p")
+        'time': final_time.strftime("%H:%M")  # 24-hour format
     })
 
     return result, int(shortest_cost)
@@ -147,7 +147,7 @@ if show_all:
         if isinstance(result, tuple):
             path, duration = result
             routes_table.append({
-                'Start Time': s_time.strftime("%I:%M %p"),
+                'Start Time': s_time.strftime("%H:%M"),  # 24-hour format
                 'Duration (min)': duration,
                 'Transfers': sum(1 for i in range(1, len(path)) if path[i]['route'] != path[i-1]['route'])
             })
