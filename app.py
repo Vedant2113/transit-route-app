@@ -23,6 +23,18 @@ st.markdown("""
             padding-left: 2rem;
             padding-right: 2rem;
         }
+        .route-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .route-selectbox {
+            flex-grow: 1;
+        }
+        .route-switch {
+            padding: 0 10px;
+            font-size: 20px;
+        }
     </style>
 """, unsafe_allow_html=True)
 
@@ -46,12 +58,14 @@ user_time = st.time_input("Select earliest available departure time", value=defa
 
 # UI input
 all_displays = sorted(df['StopDisplay'].dropna().unique())
-start_display = st.selectbox("Select starting stop", all_displays, index=0)
-end_display = st.selectbox("Select destination stop", all_displays, index=1)
-
-# Reverse button
-if st.button("🔄 Reverse Route"):
-    start_display, end_display = end_display, start_display
+col1, col2, col3 = st.columns([5, 1, 5])
+with col1:
+    start_display = st.selectbox("Select starting stop", all_displays, key="start")
+with col2:
+    if st.button("🔄", help="Switch start and destination"):
+        st.session_state['start'], st.session_state['end'] = st.session_state.get('end', all_displays[1]), st.session_state.get('start', all_displays[0])
+with col3:
+    end_display = st.selectbox("Select destination stop", all_displays, key="end")
 
 start = stop_display_map[start_display]
 end = stop_display_map[end_display]
