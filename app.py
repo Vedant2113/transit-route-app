@@ -32,6 +32,9 @@ st.markdown("""
             color: #000000;
             position: relative;
         }
+        label, .stSelectbox, .stRadio, .stTimeInput, .stCheckbox {
+            color: #000000 !important;
+        }
         .stSelectbox > div, .stRadio > div, .stTimeInput > div, .stCheckbox > div {
             margin-bottom: 1rem;
             color: #000000;
