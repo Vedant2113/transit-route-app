@@ -50,6 +50,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    margin-top: 2rem;  /* Add margin for spacing */
     height: 60px;
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
@@ -124,14 +125,14 @@ if 'start_display' not in st.session_state:
 if 'end_display' not in st.session_state:
     st.session_state['end_display'] = all_displays[1]
 
-# Swap trigger button
+# Swap trigger button with proper spacing
 swap = False
 col1, col2, col3 = st.columns([4.2, 0.6, 4.2])
 with col2:
     st.markdown("""
-        <div style='display: flex; justify-content: center; align-items: center; margin-top: 2.4rem; height: 40px;'>
-    <button class='swap-button' onclick='document.querySelector("button[kind=\"secondary\"]").click();'>🔄</button>
-</div>
+        <div class='swap-button-container'>
+            <button class='swap-button' onclick='document.querySelector("button[kind=\"secondary\"]").click();'>🔄</button>
+        </div>
     """, unsafe_allow_html=True)
     swap = st.button("", key="swap_button", help="Switch start and destination")
 
@@ -154,6 +155,9 @@ end = stop_display_map[end_display]
 
 trip_type = st.radio("Trip type", options=["One-way"])
 show_all = st.checkbox("Show all possible routes without selecting time")
+
+# Graph construction and other route processing code continues...
+
 
 # Graph construction
 G = nx.DiGraph()
