@@ -23,7 +23,7 @@ body {
 }
 .block-container {
     width: 100%;
-    max-width: 860px;
+    max-width: 960px;
     padding: 2.5rem 3rem;
     background: #1a1a1a;
     border-radius: 16px;
@@ -61,8 +61,8 @@ body {
     border: none;
     border-radius: 50%;
     font-size: 18px;
-    width: 38px;
-    height: 38px;
+    width: 42px;
+    height: 42px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -73,12 +73,12 @@ body {
 .swap-button-container:hover .swap-button::before {
     content: "Switch Start & Destination";
     position: absolute;
-    top: -28px;
+    top: -36px;
     background-color: #222;
     color: #eee;
     padding: 4px 10px;
     border-radius: 5px;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     white-space: nowrap;
     z-index: 1;
     box-shadow: 0 2px 5px rgba(0,0,0,0.4);
