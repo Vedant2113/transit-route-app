@@ -3,72 +3,78 @@ import networkx as nx
 import pandas as pd
 from datetime import datetime, timedelta, time
 
-# Load your Excel data
+# Load Excel data
 file_path = "merged_data.xlsx"
 df = pd.read_excel(file_path)
-
-# Fix the time format
 df['Time'] = pd.to_datetime(df['DepartTime'], errors='coerce').dt.time
 
 # Streamlit UI
 st.set_page_config(layout="wide")
 st.markdown("""
-    <style>
-    .main > div {
-        display: flex;
-        justify-content: center;
-        padding: 3rem 1rem;
-    }
-    .block-container {
-        width: 100%;
-        max-width: 680px;
-        padding: 2.5rem;
-        background: linear-gradient(to bottom right, #1e1e1e, #2e2e2e);
-        border-radius: 14px;
-        box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-        color: #f1f1f1;
-    }
-    .stSelectbox > div, .stRadio > div, .stTimeInput > div, .stCheckbox > div {
-        margin-bottom: 1rem;
-    }
-    .stButton button {
-        width: 100%;
-        background-color: #1a73e8;
-        color: white;
-        border-radius: 8px;
-        font-size: 1.05rem;
-        padding: 0.75rem 1.25rem;
-        margin-top: 1.25rem;
-    }
-    .stButton button:hover {
-        background-color: #1669c1;
-    }
-    .route-switch {
-        margin-top: 2.8rem;
-        font-size: 20px;
-    }
-    .swap-button {
-    background: #444;
+<style>
+body {
+    background-color: #0f0f0f;
+    font-family: 'Segoe UI', sans-serif;
+}
+.main > div {
+    display: flex;
+    justify-content: center;
+    padding: 2rem 1rem;
+}
+.block-container {
+    width: 100%;
+    max-width: 720px;
+    padding: 2rem;
+    background: #1a1a1a;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    color: #ffffff;
+}
+.stSelectbox > div, .stRadio > div, .stTimeInput > div, .stCheckbox > div {
+    margin-bottom: 1rem;
+}
+.stButton button {
+    width: 100%;
+    background-color: #ff5c5c;
     color: white;
-    border: none;
-    border-radius: 50%;
-    font-size: 20px;
-    width: 38px;
-    height: 38px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 0.75rem;
+    transition: background 0.3s ease;
+}
+.stButton button:hover {
+    background-color: #e04e4e;
+}
+.swap-button-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    margin-top: 1.3rem;
 }
-    .swap-button:hover {
-        background: #666;
-    }
-    .transfer-step {
-        color: #2ecc71;
-        font-weight: bold;
-    }
+.swap-button {
+    background: #333;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 18px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.25);
+}
+.swap-button:hover {
+    background: #555;
+}
+.transfer-step {
+    color: #34eb77;
+    font-weight: bold;
+}
 </style>
 """, unsafe_allow_html=True)
+
 
 st.title("🚌 Bus Route Time Optimizer")
 
