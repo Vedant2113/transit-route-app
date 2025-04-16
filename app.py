@@ -141,7 +141,7 @@ end = stop_display_map[end_display]
 trip_type = st.radio("Trip type", options=["One-way"])
 show_all = st.checkbox("Show all possible routes without selecting time")
 
-# Show all available routes vertically and spaced
+# Show all available routes vertically (back to normal appearance)
 if show_all:
     found_any = False
     all_times = sorted([t for s, t in G.nodes if s == start])
@@ -150,22 +150,17 @@ if show_all:
         if isinstance(result, tuple):
             path, duration = result
             found_any = True
-            st.markdown("""
-                <div style='padding: 1.2em; margin-bottom: 2em; border-radius: 8px; background-color: #1e1e1e;'>
-                    <h3 style='margin-bottom:0;'>🕒 Start Time: {}</h3>
-                    <h4 style='margin-top:0;'>⏱️ Trip Duration: {} minutes</h4>
-            """.format(s_time.strftime('%H:%M'), duration), unsafe_allow_html=True)
-
+            st.write(f"🕒 **Start Time:** {s_time.strftime('%H:%M')}")
+            st.write(f"⏱️ **Trip Duration:** {duration} minutes")
             previous_route = None
             for step in path:
                 if step['transfer']:
-                    st.markdown(f"🔁 <b>Transfer at {step['stop']} ({step['town']})</b> — wait and take Route <b>{path[path.index(step)+1]['route']}</b> at <b>{step['time']}</b>", unsafe_allow_html=True)
+                    st.write(f"🔁 Transfer at {step['stop']} ({step['town']}) — wait and take Route {path[path.index(step)+1]['route']} at {step['time']}")
                 else:
                     transfer_notice = f" (Transfer to Route {step['route']})" if previous_route and step['route'] != previous_route else ""
-                    st.markdown(f"➡️ <b>{step['stop']} ({step['town']})</b> via Route <b>{step['route']}</b>{transfer_notice} at <b>{step['time']}</b>", unsafe_allow_html=True)
+                    st.write(f"➡️ {step['stop']} ({step['town']}) via Route {step['route']}{transfer_notice} at {step['time']}")
                 previous_route = step['route']
-
-            st.markdown("</div>", unsafe_allow_html=True)
+            st.markdown("---")
 
     if not found_any:
         st.warning("No available routes found from this stop to the destination.")
@@ -182,8 +177,8 @@ elif st.button("Find Shortest Time"):
         previous_route = None
         for step in route:
             if step['transfer']:
-                st.markdown(f"🔁 <b>Transfer at {step['stop']} ({step['town']})</b> — wait and take Route <b>{route[route.index(step)+1]['route']}</b> at <b>{step['time']}</b>", unsafe_allow_html=True)
+                st.write(f"🔁 Transfer at {step['stop']} ({step['town']}) — wait and take Route {route[route.index(step)+1]['route']} at {step['time']}")
             else:
                 transfer_notice = f" (Transfer to Route {step['route']})" if previous_route and step['route'] != previous_route else ""
-                st.markdown(f"➡️ <b>{step['stop']} ({step['town']})</b> via Route <b>{step['route']}</b>{transfer_notice} at <b>{step['time']}</b>", unsafe_allow_html=True)
+                st.write(f"➡️ {step['stop']} ({step['town']}) via Route {step['route']}{transfer_notice} at {step['time']}")
             previous_route = step['route']
