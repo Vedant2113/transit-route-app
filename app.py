@@ -121,9 +121,7 @@ end = stop_display_map[end_display]
 trip_type = st.radio("Trip type", options=["One-way"])
 show_all = st.checkbox("Show all possible routes without selecting time")
 
-# Graph and route logic stays the same...
-
-#Graph
+# Graph
 G = nx.DiGraph()
 df = df[df['Time'].notnull()].sort_values(by=['Stop Location', 'Time'])
 
@@ -163,7 +161,7 @@ for stop, group in df.groupby('Stop Location'):
 
 # Shortest path finder
 def find_transfer_path(start, end, start_time):
-    candidates = [(s, t) for s, t in G.nodes if s == start and t >= start_time]
+    candidates = [(s, t) for s, t in G.nodes if s == start and (time_mode == 'Any Time' or t >= start_time)]
     targets = [(s, t) for s, t in G.nodes if s == end]
     shortest_path = None
     shortest_cost = float('inf')
