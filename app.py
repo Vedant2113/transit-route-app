@@ -65,17 +65,21 @@ st.markdown("""
             color: black;
             font-weight: bold;
         }
+        .highlight-transfer-step {
+            background-color: rgba(252, 234, 187, 0.9);
+            padding: 0.4rem 0.6rem;
+            border-radius: 4px;
+            font-weight: bold;
+            display: inline-block;
+            margin: 0.25rem 0;
+        }
     </style>
 """, unsafe_allow_html=True)
-st.title("🚌 Bus Route Time Optimizer")
 
 # Clear previous titles if duplicated
 if 'title_rendered' not in st.session_state:
     st.title("🚌 Bus Route Time Optimizer")
     st.session_state['title_rendered'] = True
-
-    
-
 # Select operating day
 days_of_week = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 selected_day = st.selectbox("Select operating day", days_of_week, index=datetime.today().weekday())
