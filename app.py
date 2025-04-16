@@ -63,27 +63,22 @@ if 'start_display' not in st.session_state:
     st.session_state['start_display'] = all_displays[0]
 if 'end_display' not in st.session_state:
     st.session_state['end_display'] = all_displays[1]
-if 'swap_clicked' not in st.session_state:
-    st.session_state['swap_clicked'] = False
+
+# Swap trigger button
+swap = False
+col1, col2, col3 = st.columns([5, 1, 5])
+with col2:
+    swap = st.button("🔄", help="Switch start and destination")
+
+# Handle swap before dropdowns
+if swap:
+    st.session_state['start_display'], st.session_state['end_display'] = st.session_state['end_display'], st.session_state['start_display']
 
 # Layout for route selection
-col1, col2, col3 = st.columns([5, 1, 5])
 with col1:
     start_display = st.selectbox("Select starting stop", all_displays, index=all_displays.index(st.session_state['start_display']), key="start")
-with col2:
-    if st.button("🔄", help="Switch start and destination"):
-        temp = st.session_state['start_display']
-        st.session_state['start_display'] = st.session_state['end_display']
-        st.session_state['end_display'] = temp
-        st.session_state['swap_clicked'] = True
 with col3:
     end_display = st.selectbox("Select destination stop", all_displays, index=all_displays.index(st.session_state['end_display']), key="end")
-
-# Update after swap
-if st.session_state['swap_clicked']:
-    start_display = st.session_state['start_display']
-    end_display = st.session_state['end_display']
-    st.session_state['swap_clicked'] = False
 
 # Persist values
 st.session_state['start_display'] = start_display
