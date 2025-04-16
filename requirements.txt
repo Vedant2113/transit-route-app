@@ -2,3 +2,4 @@ streamlit
 pandas
 networkx
 openpyxl
+plotly
