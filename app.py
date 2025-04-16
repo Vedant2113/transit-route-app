@@ -17,50 +17,55 @@ st.markdown("""
     .main > div {
         display: flex;
         justify-content: center;
-        padding-top: 2rem;
+        padding: 3rem 1rem;
     }
     .block-container {
-        max-width: 520px;
-        padding: 2rem;
-        background-color: #1e1e1e; color: white;
-        border-radius: 16px;
-        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 680px;
+        padding: 2.5rem;
+        background: linear-gradient(to bottom right, #1e1e1e, #2e2e2e);
+        border-radius: 14px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        color: #f1f1f1;
     }
     .stSelectbox > div, .stRadio > div, .stTimeInput > div, .stCheckbox > div {
-        margin-bottom: 14px;
+        margin-bottom: 1rem;
     }
     .stButton button {
-        border-radius: 6px;
-        padding: 0.6rem 1.5rem;
-        font-size: 1rem;
         width: 100%;
+        background-color: #1a73e8;
+        color: white;
+        border-radius: 8px;
+        font-size: 1.05rem;
+        padding: 0.75rem 1.25rem;
+        margin-top: 1.25rem;
     }
-    .route-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+    .stButton button:hover {
+        background-color: #1669c1;
     }
     .route-switch {
-        padding: 0 8px;
-        font-size: 18px;
-        margin-top: 38px;
+        margin-top: 2.8rem;
+        font-size: 20px;
+    }
+    .swap-button {
+        background: #444;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        font-size: 20px;
+        width: 44px;
+        height: 44px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 2.8rem;
+    }
+    .swap-button:hover {
+        background: #666;
     }
     .transfer-step {
         color: #2ecc71;
         font-weight: bold;
-    }
-    .swap-button {
-        background: #333;
-        color: white;
-        border: none;
-        border-radius: 6px;
-        font-size: 18px;
-        padding: 8px 12px;
-        cursor: pointer;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-    }
-    .swap-button:hover {
-        background: #555;
     }
 </style>
 """, unsafe_allow_html=True)
