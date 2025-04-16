@@ -63,21 +63,17 @@ if 'start_display' not in st.session_state:
 if 'end_display' not in st.session_state:
     st.session_state['end_display'] = all_displays[1]
 
-# Switch logic handler
-if 'swap_triggered' not in st.session_state:
-    st.session_state['swap_triggered'] = False
-
 # Layout for route selection
 col1, col2, col3 = st.columns([5, 1, 5])
 with col1:
-    if st.session_state['swap_triggered']:
-        st.session_state['start_display'], st.session_state['end_display'] = st.session_state['end_display'], st.session_state['start_display']
-        st.session_state['swap_triggered'] = False
     start_display = st.selectbox("Select starting stop", all_displays, index=all_displays.index(st.session_state['start_display']), key="start")
 with col2:
     if st.button("🔄", help="Switch start and destination"):
-        st.session_state['swap_triggered'] = True
-        st.experimental_rerun()
+        temp_start = st.session_state['start_display']
+        st.session_state['start_display'] = st.session_state['end_display']
+        st.session_state['end_display'] = temp_start
+        start_display = st.session_state['start_display']
+        end_display = st.session_state['end_display']
 with col3:
     end_display = st.selectbox("Select destination stop", all_displays, index=all_displays.index(st.session_state['end_display']), key="end")
 
@@ -90,7 +86,8 @@ end = stop_display_map[end_display]
 
 trip_type = st.radio("Trip type", options=["One-way"])
 show_all = st.checkbox("Show all possible routes without selecting time")
-# Build graph
+
+# [rest of code remains unchanged after this line]
 G = nx.DiGraph()
 df = df[df['Time'].notnull()].sort_values(by=['Stop Location', 'Time'])
 
