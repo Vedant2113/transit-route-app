@@ -50,7 +50,9 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 1.3rem;
+    height: 60px;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
 }
 .swap-button {
     background: #333;
@@ -58,12 +60,13 @@ body {
     border: none;
     border-radius: 50%;
     font-size: 18px;
-    width: 36px;
-    height: 36px;
+    width: 38px;
+    height: 38px;
     display: flex;
     justify-content: center;
     align-items: center;
     box-shadow: 0 2px 5px rgba(0,0,0,0.25);
+    transition: background 0.3s ease;
 }
 .swap-button:hover {
     background: #555;
