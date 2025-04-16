@@ -23,8 +23,8 @@ body {
 }
 .block-container {
     width: 100%;
-    max-width: 720px;
-    padding: 2rem;
+    max-width: 860px;
+    padding: 2.5rem 3rem;
     background: #1a1a1a;
     border-radius: 16px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
@@ -50,7 +50,6 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 2rem;  /* Add margin for spacing */
     height: 60px;
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
@@ -93,6 +92,7 @@ body {
 }
 </style>
 """, unsafe_allow_html=True)
+
 
 st.title("🚌 Bus Route Time Optimizer")
 
