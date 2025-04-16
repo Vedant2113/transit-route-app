@@ -17,21 +17,23 @@ st.markdown("""
     .main > div {
         display: flex;
         justify-content: center;
+        padding-top: 2rem;
     }
     .block-container {
-        max-width: 640px;
-        padding: 1rem;
-        background-color: #f9f9f9;
-        border-radius: 12px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        max-width: 520px;
+        padding: 2rem;
+        background-color: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
     }
-    .stSelectbox > div, .stRadio > div, .stTimeInput > div {
-        margin-bottom: 8px;
+    .stSelectbox > div, .stRadio > div, .stTimeInput > div, .stCheckbox > div {
+        margin-bottom: 14px;
     }
     .stButton button {
         border-radius: 6px;
-        padding: 0.5rem 1.5rem;
+        padding: 0.6rem 1.5rem;
         font-size: 1rem;
+        width: 100%;
     }
     .route-row {
         display: flex;
@@ -41,7 +43,7 @@ st.markdown("""
     .route-switch {
         padding: 0 8px;
         font-size: 18px;
-        margin-top: 28px;
+        margin-top: 38px;
     }
     .transfer-step {
         color: #2ecc71;
