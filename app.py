@@ -62,7 +62,6 @@ with colt1:
     time_mode = st.radio("Time Mode", ["Specific Time", "Any Time"], horizontal=True)
 with colt2:
     user_time = default_time if time_mode == "Any Time" else st.time_input("Select earliest available departure time", value=default_time)
-user_time = default_time if time_mode == "Any Time" else st.time_input("Select earliest available departure time", value=default_time)
 
 # Initialize session state defaults
 if 'start_display' not in st.session_state:
