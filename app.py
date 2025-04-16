@@ -56,23 +56,30 @@ time_options = sorted(df['Time'].dropna().unique())
 default_time = min(time_options) if time_options else time(6, 0)
 user_time = st.time_input("Select earliest available departure time", value=default_time)
 
-# UI input
-all_displays = sorted(df['StopDisplay'].dropna().unique())
+# Initialize session state defaults if not already set
+if 'start_display' not in st.session_state:
+    st.session_state['start_display'] = df['StopDisplay'].iloc[0]
+if 'end_display' not in st.session_state:
+    st.session_state['end_display'] = df['StopDisplay'].iloc[1]
+
+# Layout for route selection
 col1, col2, col3 = st.columns([5, 1, 5])
 with col1:
-    start_display = st.selectbox("Select starting stop", all_displays, key="start")
+    st.session_state['start_display'] = st.selectbox("Select starting stop", all_displays, index=all_displays.index(st.session_state['start_display']), key="start")
 with col2:
     if st.button("🔄", help="Switch start and destination"):
-        st.session_state['start'], st.session_state['end'] = st.session_state.get('end', all_displays[1]), st.session_state.get('start', all_displays[0])
+        st.session_state['start_display'], st.session_state['end_display'] = st.session_state['end_display'], st.session_state['start_display']
 with col3:
-    end_display = st.selectbox("Select destination stop", all_displays, key="end")
+    st.session_state['end_display'] = st.selectbox("Select destination stop", all_displays, index=all_displays.index(st.session_state['end_display']), key="end")
+
+start_display = st.session_state['start_display']
+end_display = st.session_state['end_display']
 
 start = stop_display_map[start_display]
 end = stop_display_map[end_display]
 
 trip_type = st.radio("Trip type", options=["One-way"])
 show_all = st.checkbox("Show all possible routes without selecting time")
-
 # Build graph
 G = nx.DiGraph()
 df = df[df['Time'].notnull()].sort_values(by=['Stop Location', 'Time'])
