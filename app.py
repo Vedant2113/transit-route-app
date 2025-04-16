@@ -66,23 +66,29 @@ if 'end_display' not in st.session_state:
 # Layout for route selection
 col1, col2, col3 = st.columns([5, 1, 5])
 with col1:
-    st.session_state['start_display'] = st.selectbox("Select starting stop", all_displays, index=all_displays.index(st.session_state['start_display']), key="start")
+    start_display = st.selectbox("Select starting stop", all_displays, index=all_displays.index(st.session_state['start_display']), key="start")
 with col2:
     if st.button("🔄", help="Switch start and destination"):
-        tmp = st.session_state['start_display']
-        st.session_state['start_display'] = st.session_state['end_display']
-        st.session_state['end_display'] = tmp
+        tmp_start = st.session_state['start_display']
+        tmp_end = st.session_state['end_display']
+        st.session_state['start_display'] = tmp_end
+        st.session_state['end_display'] = tmp_start
+        start_display = tmp_end
+        end_display = tmp_start
 with col3:
-    st.session_state['end_display'] = st.selectbox("Select destination stop", all_displays, index=all_displays.index(st.session_state['end_display']), key="end")
+    end_display = st.selectbox("Select destination stop", all_displays, index=all_displays.index(st.session_state['end_display']), key="end")
 
-start_display = st.session_state['start_display']
-end_display = st.session_state['end_display']
+# Persist values after switch
+st.session_state['start_display'] = start_display
+st.session_state['end_display'] = end_display
 
 start = stop_display_map[start_display]
 end = stop_display_map[end_display]
 
 trip_type = st.radio("Trip type", options=["One-way"])
 show_all = st.checkbox("Show all possible routes without selecting time")
+
+# [rest of code remains unchanged after this line]
 
 # [rest of code remains unchanged after this line]
 
