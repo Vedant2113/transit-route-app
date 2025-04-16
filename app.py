@@ -41,11 +41,12 @@ st.markdown("""
 st.title("🚌 Bus Route Time Optimizer")
 
 # Select operating day
-days_of_week = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-selected_day = st.selectbox("Select operating day", days_of_week, index=datetime.today().weekday())
+days_of_week = ['All Days', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+selected_day = st.selectbox("Select operating day", days_of_week, index=datetime.today().weekday() + 1)
 
 # Filter data by selected day
-df = df[df[selected_day] == 1]
+if selected_day != 'All Days':
+    df = df[df[selected_day] == 1]
 
 # Add town to stop name for display
 df['StopDisplay'] = df['Stop Location'].str.replace(r'\s*\(Loop\)', '', regex=True).fillna('Unknown Stop') + " (" + df['Town'].fillna('Unknown Town') + ")"
@@ -56,7 +57,8 @@ all_displays = sorted(df['StopDisplay'].dropna().unique())
 # Limit time options
 time_options = sorted(df['Time'].dropna().unique())
 default_time = min(time_options) if time_options else time(6, 0)
-user_time = st.time_input("Select earliest available departure time", value=default_time)
+time_mode = st.radio("Select departure time preference", ["Specific Time", "Any Time"])
+user_time = default_time if time_mode == "Any Time" else st.time_input("Select earliest available departure time", value=default_time)
 
 # Initialize session state defaults
 if 'start_display' not in st.session_state:
@@ -130,7 +132,7 @@ for stop, group in df.groupby('Stop Location'):
 
 # Shortest path finder
 def find_transfer_path(start, end, start_time):
-    candidates = [(s, t) for s, t in G.nodes if s == start and t >= start_time]
+    candidates = [(s, t) for s, t in G.nodes if s == start and (time_mode == 'Any Time' or t >= start_time)]
     targets = [(s, t) for s, t in G.nodes if s == end]
     shortest_path = None
     shortest_cost = float('inf')
