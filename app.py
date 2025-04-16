@@ -75,7 +75,7 @@ st.markdown("""
         }
     </style>
 """, unsafe_allow_html=True)
-st.title("🚌 SmartCommute Navigator")
+st.title("🚌 Smart Commute Navigator")
 
 
 # Select operating day
