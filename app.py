@@ -68,8 +68,11 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-
+# Clear previous titles if duplicated
+if 'title_rendered' not in st.session_state:
     st.title("🚌 Bus Route Time Optimizer")
+    st.session_state['title_rendered'] = True
+
     
 
 # Select operating day
