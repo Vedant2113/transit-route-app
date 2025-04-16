@@ -19,29 +19,33 @@ st.markdown("""
         justify-content: center;
     }
     .block-container {
-        max-width: 720px;
-        padding-left: 1rem;
-        padding-right: 1rem;
+        max-width: 640px;
+        padding: 1rem;
+        background-color: #f9f9f9;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    .stSelectbox > div, .stRadio > div, .stTimeInput > div {
+        margin-bottom: 8px;
+    }
+    .stButton button {
+        border-radius: 6px;
+        padding: 0.5rem 1.5rem;
+        font-size: 1rem;
     }
     .route-row {
         display: flex;
         justify-content: space-between;
         align-items: center;
     }
-    .route-selectbox {
-        flex-grow: 1;
-    }
     .route-switch {
-        padding: 0 10px;
-        font-size: 20px;
-        margin-top: 32px;
+        padding: 0 8px;
+        font-size: 18px;
+        margin-top: 28px;
     }
-    .stSelectbox > div, .stRadio > div, .stTimeInput > div {
-        margin-bottom: 10px;
-    }
-    .stButton button {
-        border-radius: 6px;
-        padding: 0.4rem 1rem;
+    .transfer-step {
+        color: #2ecc71;
+        font-weight: bold;
     }
 </style>
 """, unsafe_allow_html=True)
