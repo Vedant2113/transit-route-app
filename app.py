@@ -75,6 +75,7 @@ st.markdown("""
         }
     </style>
 """, unsafe_allow_html=True)
+st.title("🚌 Bus Route Time Optimizer")
 
 
 # Select operating day
