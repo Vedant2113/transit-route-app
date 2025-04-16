@@ -15,6 +15,7 @@ st.markdown("""
         body {
             background-color: #f7f7f7;
             font-family: 'Segoe UI', sans-serif;
+            color: #000000;
         }
         .main > div {
             display: flex;
@@ -28,16 +29,17 @@ st.markdown("""
             background: white;
             border-radius: 16px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            color: #333;
+            color: #000000;
             position: relative;
         }
         .stSelectbox > div, .stRadio > div, .stTimeInput > div, .stCheckbox > div {
             margin-bottom: 1rem;
+            color: #000000;
         }
         .stButton button {
             width: 100%;
             background-color: #ffcc00;
-            color: #222;
+            color: #000000;
             border-radius: 8px;
             font-size: 1rem;
             font-weight: bold;
@@ -60,7 +62,7 @@ st.markdown("""
         }
         .swap-button {
             background: #eeeeee;
-            color: #333;
+            color: #000000;
             border: 1px solid #ccc;
             border-radius: 4px;
             font-size: 18px;
