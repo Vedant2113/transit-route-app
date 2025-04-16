@@ -11,100 +11,102 @@ df['Time'] = pd.to_datetime(df['DepartTime'], errors='coerce').dt.time
 # Streamlit UI
 st.set_page_config(layout="wide")
 st.markdown("""
-<style>
-body {
-    background-color: #0f0f0f;
-    font-family: 'Segoe UI', sans-serif;
-}
-.main > div {
-    display: flex;
-    justify-content: center;
-    padding: 2rem 1rem;
-}
-.block-container {
-    width: 100%;
-    max-width: 1080px;
-    padding: 2.5rem 3rem;
-    background: #1a1a1a;
-    border-radius: 16px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-    color: #ffffff;
-    position: relative;
-}
-.stSelectbox > div, .stRadio > div, .stTimeInput > div, .stCheckbox > div {
-    margin-bottom: 1rem;
-}
-.stButton button {
-    width: 100%;
-    background-color: #ff5c5c;
-    color: white;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: bold;
-    padding: 0.75rem;
-    transition: background 0.3s ease;
-}
-.stButton button:hover {
-    background-color: #e04e4e;
-}
-.swap-button-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 60px;
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
-    margin-top: 0.5rem;
-    margin-bottom: 1rem;
-    position: relative;
-}
-.swap-button {
-    background: #333;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    font-size: 18px;
-    width: 42px;
-    height: 42px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.25);
-    transition: background 0.3s ease;
-    z-index: 2;
-    position: relative;
-}
-.swap-button::before {
-    content: "Switch Start & Destination";
-    position: absolute;
-    top: -42px;
-    background-color: #222;
-    color: #eee;
-    padding: 4px 10px;
-    border-radius: 5px;
-    font-size: 0.9rem;
-    white-space: nowrap;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    pointer-events: none;
-    z-index: 1;
-}
-.swap-button-container:hover .swap-button::before {
-    opacity: 1;
-}
-.swap-button:hover {
-    background: #555;
-}
-.transfer-step {
-    color: #34eb77;
-    font-weight: bold;
-}
-</style>
+    <style>
+        .main > div {
+            display: flex;
+            justify-content: center;
+        }
+        .block-container {
+            max-width: 1080px;
+            padding: 2rem 3rem;
+            background: #1a1a1a;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            color: #ffffff;
+            position: relative;
+        }
+        .stSelectbox > div, .stRadio > div, .stTimeInput > div, .stCheckbox > div {
+            margin-bottom: 1rem;
+        }
+        .stButton button {
+            width: 100%;
+            background-color: #ff5c5c;
+            color: white;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            padding: 0.75rem;
+            transition: background 0.3s ease;
+        }
+        .stButton button:hover {
+            background-color: #e04e4e;
+        }
+        .swap-button-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 60px;
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+            margin-top: -0.5rem;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+        .swap-button {
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 18px;
+            width: 42px;
+            height: 42px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.25);
+            transition: background 0.3s ease;
+            z-index: 2;
+            position: relative;
+        }
+        .swap-button::before {
+            content: "Switch Start & Destination";
+            position: absolute;
+            top: -42px;
+            background-color: #222;
+            color: #eee;
+            padding: 4px 10px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .swap-button-container:hover .swap-button::before {
+            opacity: 1;
+        }
+        .swap-button:hover {
+            background: #555;
+        }
+        .route-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .route-selectbox {
+            flex-grow: 1;
+        }
+        .route-switch {
+            padding: 0 10px;
+            font-size: 20px;
+        }
+        .transfer-step {
+            color: #34eb77;
+            font-weight: bold;
+        }
+    </style>
 """, unsafe_allow_html=True)
-
-
-
-
 st.title("🚌 Bus Route Time Optimizer")
 
 # Select operating day
