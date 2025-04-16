@@ -33,40 +33,35 @@ st.markdown("""
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             color: white;
         }
-        .stSelectbox > div > label, .stRadio > div > label, .stTimeInput > div > label, .stCheckbox > div > label {
+        label, .stRadio > div, .stCheckbox > div {
             color: white !important;
             font-weight: 600;
         }
         .stButton button {
-            width: 100%;
             background-color: #f6c700;
             color: black;
             border-radius: 6px;
             font-size: 1rem;
+            font-weight: bold;
             padding: 0.75rem;
-            margin-top: 1.25rem;
+            width: 100%;
         }
         .stButton button:hover {
             background-color: #dab700;
         }
-        .route-row {
+        .swap-button-centered {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            justify-content: center;
+            padding: 1rem;
         }
-        .route-selectbox {
-            flex-grow: 1;
-        }
-        .swap-button {
-            margin: 0 auto;
-            background: #f6c700;
+        .swap-button-centered button {
+            background-color: #f6c700;
             color: black;
             font-weight: bold;
+            font-size: 1.2rem;
             border: none;
             border-radius: 8px;
-            font-size: 20px;
-            padding: 0.5rem 1.5rem;
-            display: block;
+            padding: 0.5rem 2rem;
         }
     </style>
 """, unsafe_allow_html=True)
@@ -86,10 +81,11 @@ stop_display_map = dict(zip(df['StopDisplay'], df['Stop Location']))
 reverse_stop_display_map = {v: k for k, v in stop_display_map.items()}
 all_displays = sorted(df['StopDisplay'].dropna().unique())
 
-# Time selection
+# Time Mode toggle
+time_mode = st.radio("Time Mode", ["Specific Time", "Any Time"], horizontal=True)
 time_options = sorted(df['Time'].dropna().unique())
 default_time = min(time_options) if time_options else time(6, 0)
-user_time = st.time_input("Select earliest available departure time", value=default_time)
+user_time = default_time if time_mode == "Any Time" else st.time_input("Select earliest available departure time", value=default_time)
 
 # Session state defaults
 if 'start_display' not in st.session_state:
@@ -98,15 +94,21 @@ if 'end_display' not in st.session_state:
     st.session_state['end_display'] = all_displays[1]
 
 # Route selectors
-col1, col2, col3 = st.columns([4, 2, 4])
+col1, col3 = st.columns(2)
 with col1:
     start_display = st.selectbox("Select starting stop", all_displays, index=all_displays.index(st.session_state['start_display']), key="start")
-with col2:
-    if st.button("⇄ Swap Stops", key="swap_button"):
-        st.session_state['start_display'], st.session_state['end_display'] = st.session_state['end_display'], st.session_state['start_display']
 with col3:
     end_display = st.selectbox("Select destination stop", all_displays, index=all_displays.index(st.session_state['end_display']), key="end")
 
+# Swap Button centered
+with st.container():
+    with st.container():
+        swap_center = st.columns([4.5, 3, 4.5])
+        with swap_center[1]:
+            if st.button("⇄ Swap Stops", key="swap_button"):
+                st.session_state['start_display'], st.session_state['end_display'] = st.session_state['end_display'], st.session_state['start_display']
+
+# Persist values
 st.session_state['start_display'] = start_display
 st.session_state['end_display'] = end_display
 start = stop_display_map[start_display]
