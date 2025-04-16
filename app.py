@@ -12,6 +12,20 @@ df['Time'] = pd.to_datetime(df['DepartTime'], errors='coerce').dt.time
 
 # Streamlit UI
 st.set_page_config(layout="wide")
+st.markdown("""
+    <style>
+        .main > div {
+            display: flex;
+            justify-content: center;
+        }
+        .block-container {
+            max-width: 800px;
+            padding-left: 2rem;
+            padding-right: 2rem;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
 st.title("🚌 Bus Route Time Optimizer")
 
 # Select operating day
