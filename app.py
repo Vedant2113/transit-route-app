@@ -23,7 +23,7 @@ body {
 }
 .block-container {
     width: 100%;
-    max-width: 960px;
+    max-width: 1040px;
     padding: 2.5rem 3rem;
     background: #1a1a1a;
     border-radius: 16px;
@@ -73,12 +73,12 @@ body {
 .swap-button-container:hover .swap-button::before {
     content: "Switch Start & Destination";
     position: absolute;
-    top: -36px;
+    top: -44px;
     background-color: #222;
     color: #eee;
     padding: 4px 10px;
     border-radius: 5px;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     white-space: nowrap;
     z-index: 1;
     box-shadow: 0 2px 5px rgba(0,0,0,0.4);
@@ -92,6 +92,7 @@ body {
 }
 </style>
 """, unsafe_allow_html=True)
+
 
 
 st.title("🚌 Bus Route Time Optimizer")
